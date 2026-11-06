@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="CFD 棱柱层网格辅助计算器，支持 Star-CCM+，y+、正反设计、实测校准与翼型局部估算。">
+<title>Prism Layer Studio · STAR-CCM+ 棱柱层设计工具</title><style>
+/* Prism Layer Studio v2.1 — Airframe / Scientific workstation visual language
+ * All visuals are local: no fonts, scripts or images are fetched from the network. */
+:root {
+  color-scheme: dark;
+  --bg: #080d19;
+  --bg-elevated: #0e1728;
+  --surface: #101b2d;
+  --surface-higher: #14233a;
+  --surface-hover: #182a42;
+  --stroke: #283a54;
+  --stroke-soft: #1e3048;
+  --text: #eaf3fc;
+  --text-muted: #9eafc6;
+  --text-faint: #718aa8;
+  --accent: #64e4d3;
+  --accent-2: #60b7ff;
+  --accent-bright: #a5fff0;
+  --amber: #eec786;
+  --red: #ff95a7;
+  --success: #67d8b9;
+  --ring: #55d9db;
+  --font: "Inter", "Segoe UI Variable Text", "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --mono: "Cascadia Code", "SFMono-Regular", Consolas, "Roboto Mono", monospace;
+  --shadow: 0 20px 52px rgba(0,5,16,.28), 0 3px 12px rgba(0,7,16,.16);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(ellipse 70% 500px at 50% -260px,#163d54 0%,transparent 90%),var(--bg);font:14px/1.65 var(--font);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+button{transition:background-color .18s,border-color .18s,color .18s,transform .18s,box-shadow .18s}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
+button:active{transform:translateY(1px)}
+[hidden],.field[hidden],#outerFields[hidden],#calibrationFields[hidden]{display:none!important}
+.wrap{width:100%;max-width:1500px;margin-inline:auto;padding-inline:32px}
+/* ───────────────────────── Hero ───────────────────────── */
+.top{position:relative;overflow:hidden;background:linear-gradient(118deg,#0a1625 10%,#111e34 58%,#0d1a2a 100%);border-bottom:1px solid rgba(118,174,204,.18)}
+.top::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(109,163,204,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(109,163,204,.035) 1px,transparent 1px);background-size:40px 40px;mask-image:linear-gradient(90deg,transparent 20%,black 100%)}
+.top-glow{position:absolute;pointer-events:none;inset:-200px -120px auto auto;width:740px;height:620px;background:radial-gradient(circle,rgba(49,152,160,.16),rgba(61,75,163,.06) 43%,transparent 68%)}
+.top-inner{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(330px,.85fr);align-items:center;gap:48px;padding-block:35px 31px}
+.brand-row{display:flex;align-items:center;gap:11px;margin-bottom:23px}
+.brand-mark{display:grid;place-items:center;width:38px;height:38px;flex:none;background:linear-gradient(145deg,rgba(94,224,208,.2),rgba(88,146,214,.12));border:1px solid rgba(97,231,218,.4);border-radius:10px;color:var(--accent);box-shadow:0 0 28px rgba(91,235,207,.08)}
+.brand-mark svg{width:24px;height:24px}
+.brand-name{font-size:11px;letter-spacing:.13em;font-weight:750;color:#c7ddeb;white-space:nowrap}
+.brand-separator{height:18px;width:1px;background:#476079}
+.brand-product{font-size:10px;letter-spacing:.16em;color:var(--text-faint);white-space:nowrap}
+.eyebrow{display:flex;align-items:center;gap:9px;color:#89d6dc;font-size:10px;font-weight:800;letter-spacing:.2em}
+.eyebrow-line{width:22px;height:1px;background:var(--accent)}
+.top h1{font-size:clamp(39px,3.9vw,58px);line-height:1.07;letter-spacing:-.054em;margin:12px 0 12px;font-weight:760}
+.top h1 span:not(.title-dot){color:var(--accent)}
+.top h1 .title-dot{color:#81a8dd}
+.hero-description{font-size:14px;letter-spacing:.012em;color:#acc2d7;max-width:560px;margin:0;line-height:1.9}
+.hero-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:21px}
+.hero-tags span{font-size:11px;letter-spacing:.02em;padding:5px 10px;border:1px solid rgba(123,169,210,.26);background:rgba(18,43,67,.5);color:#bed3e5;border-radius:30px}
+.tag-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);vertical-align:2px;margin-right:5px}
+.hero-visual{justify-self:stretch;max-width:510px;margin-left:auto;border:1px solid rgba(103,173,202,.27);border-radius:15px;background:linear-gradient(145deg,rgba(17,39,59,.87),rgba(12,26,42,.7));box-shadow:0 20px 50px #02091666,inset 0 1px 0 rgba(194,241,255,.04);overflow:hidden;backdrop-filter:blur(10px)}
+.visual-top,.visual-bottom{display:flex;align-items:center;justify-content:space-between;padding:12px 17px;gap:10px}
+.visual-top{border-bottom:1px solid rgba(116,172,202,.16)}
+.visual-bottom{border-top:1px solid rgba(116,172,202,.16);background:rgba(6,16,30,.3)}
+.visual-eyebrow,.visual-bottom span{font:10px/1.4 var(--mono);font-weight:600;letter-spacing:.09em;color:#88aac5}
+.visual-live{font:9px var(--mono);color:#aaf1dc;white-space:nowrap}
+.visual-live i,.status-dot{display:inline-block;width:6px;height:6px;margin-right:5px;border-radius:50%;background:var(--success);box-shadow:0 0 9px rgba(83,222,187,.7)}
+.layer-preview{display:block;width:100%;height:auto;max-height:220px}
+.visual-bottom b{color:var(--accent);font-size:12px}
+.visual-bottom .visual-formula{letter-spacing:.02em;color:#d5ecf6;font-size:13px}
+.status-strip{position:relative;display:flex;justify-content:space-between;align-items:center;min-height:41px;border-top:1px solid rgba(123,174,207,.13);color:#8197b1;gap:14px;font:10px var(--mono);letter-spacing:.06em}
+.status-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.status-left b{color:#add9cf;font-weight:650}
+.status-sep{height:10px;width:1px;background:#3a536b;margin-inline:7px}
+.status-right b{color:var(--accent)}
+/* ───────────────────────── Architecture ───────────────────────── */
+main.wrap{padding-top:24px;padding-bottom:0}
+.notice{display:flex;align-items:center;gap:13px;padding:14px 17px;margin:0 0 21px;border:1px solid rgba(82,150,174,.31);border-radius:12px;background:linear-gradient(105deg,rgba(29,82,93,.31),rgba(26,56,80,.2));color:#bcd2e2}
+.notice-icon{display:grid;place-items:center;flex:none;width:27px;height:27px;border:1px solid rgba(107,224,215,.5);border-radius:50%;color:var(--accent);font-family:Georgia,serif;font-weight:700;font-size:16px}
+.notice strong{font-weight:700;color:#d5f2f1;font-size:12px}.notice p{margin:2px 0 0;font-size:12px;line-height:1.6}
+.notice b{font-weight:650;color:#dcf9f4}
+.notice-label{margin-left:auto;flex:none;color:#8badc1;font:10px var(--mono);letter-spacing:.11em}
+.layout{display:grid;grid-template-columns:minmax(350px,390px) minmax(0,1fr);gap:21px;align-items:start}
+.content{min-width:0}
+.panel{position:relative;background:linear-gradient(155deg,rgba(19,33,53,.96),rgba(13,24,41,.99));border:1px solid var(--stroke);border-radius:15px;padding:23px 23px 25px;box-shadow:var(--shadow);margin-bottom:21px}
+.panel::before{content:"";position:absolute;inset:0 20px auto;height:1px;background:linear-gradient(90deg,transparent,rgba(158,213,238,.1),transparent);pointer-events:none}
+.panel h2{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 21px;font-size:15px;font-weight:730;letter-spacing:.008em;line-height:1.4}
+.panel h2 small{margin-left:auto;color:var(--text-faint);font:9px/1.5 var(--mono);letter-spacing:.13em;font-weight:550}
+.num{display:inline-grid;place-items:center;width:28px;height:27px;flex:none;background:rgba(86,208,204,.1);border:1px solid rgba(89,207,212,.32);border-radius:8px;color:#84ddd8;font:11px var(--mono)}
+.inputs{padding:23px 23px 26px}
+.inputs::after{content:"";position:absolute;left:0;top:19px;bottom:19px;width:2px;background:linear-gradient(180deg,rgba(107,238,213,.7),rgba(73,139,223,.45),transparent);border-radius:2px}
+.field{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,152px);align-items:center;gap:12px;margin:13px 0}
+.field label{font-size:12px;font-weight:540;color:#c8d6e6;line-height:1.4}
+.field small{display:block;margin-top:3px;font:10px var(--mono);color:#7f9bb5}
+.field input,.field select{width:100%;min-width:0;height:37px;padding:7px 11px;color:#e7f5ff;background:#0b1828;border:1px solid #344b66;border-radius:7px;font:12px var(--mono);outline:none;box-shadow:inset 0 1px 3px rgba(0,0,0,.14);transition:border-color .18s,box-shadow .18s,background .18s}
+.field select{font-family:var(--font);font-size:11px;cursor:pointer}
+.field select option{color:#e9f3ff;background:#132238}
+.field input:hover,.field select:hover{border-color:#54738f}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(89,216,213,.13);background:#101e30}
+.field input::placeholder{color:#628098}
+.field input[type=number]{font-variant-numeric:tabular-nums}
+.sep{height:1px;background:linear-gradient(90deg,transparent,var(--stroke),transparent);margin:24px 0}
+.helper{color:var(--text-muted);font-size:11.5px;line-height:1.85;margin:12px 0 0}
+.helper strong{color:#c5d9e8}
+.mode-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:5px;background:#0c1a2c;border:1px solid #263c55;border-radius:10px;margin-bottom:13px}
+.mode-tabs button,.actions button,.secondary{background:transparent;color:#a8bfce;border:1px solid transparent;border-radius:7px;cursor:pointer;padding:9px 9px;font:12px var(--font);font-weight:580}
+.mode-tabs button:hover{background:#1b304a;color:#e6f9ff}
+.mode-tabs button.active{background:linear-gradient(110deg,#1a4956,#1d4060);border-color:rgba(97,213,205,.35);color:#acf5e8;box-shadow:0 3px 9px #0002}
+.mode-intro{min-height:36px;margin:6px 0 17px;padding:0 3px;color:#90abc4;font-size:11.5px;line-height:1.6}
+.primary{width:100%;padding:12px 14px;margin-top:14px;border-radius:9px;border:1px solid rgba(161,255,240,.25);background:linear-gradient(100deg,#6debd2,#50bbdf);color:#082333;font-weight:780;font-size:13px;letter-spacing:.03em;cursor:pointer;box-shadow:0 6px 21px rgba(70,209,202,.15)}
+.primary:hover{background:linear-gradient(100deg,#90f7e3,#7bd4ec);box-shadow:0 6px 25px rgba(76,214,208,.22)}
+.secondary{width:100%;margin-top:8px;padding:9px;background:rgba(45,69,96,.38);border-color:#314760;color:#b7c9db}
+.secondary:hover,.actions button:hover{background:#1a3550;border-color:#587b97;color:#f1fafc}
+.error{margin-top:12px;padding:11px;border:1px solid #a45668;background:#39212f;border-radius:9px;color:#ffd4d9;font-size:12px}
+/* ───────────────────────── Outputs ───────────────────────── */
+.metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.metric{grid-column:span 1;min-height:115px;position:relative;padding:14px 13px;border:1px solid #2b405a;border-radius:12px;background:linear-gradient(150deg,#16283e,#101d30);overflow:hidden}
+.metric.spotlight{grid-column:span 2;background:linear-gradient(135deg,#153644,#123044 68%,#19273d);border-color:rgba(89,196,201,.47)}
+.metric.spotlight::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;right:-83px;top:-79px;background:radial-gradient(circle,rgba(100,232,203,.15),transparent 72%)}
+.metric::before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:#5884b1;opacity:.38}
+.metric.spotlight::before{background:var(--accent);opacity:.9}
+.metric label{display:block;white-space:normal;font-size:11px;font-weight:550;color:#afc6d7}
+.metric strong{display:block;margin-top:15px;font:700 clamp(15px,1.58vw,24px)/1.1 var(--mono);letter-spacing:-.06em;color:#d8f5fa;overflow-wrap:anywhere}
+.metric.spotlight strong{color:#83f2dd}
+.metric small{display:block;font:10px/1.4 var(--mono);color:#82aebc;margin-top:8px;overflow-wrap:anywhere}
+.statline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:14px}
+.statline>div{padding:13px 12px;min-width:0;position:relative;background:rgba(8,21,36,.7);border:1px solid #233850;border-radius:9px;color:#90a8c1;font-size:10.5px}
+.statline>div::after{content:"";position:absolute;top:12px;right:11px;width:4px;height:4px;background:#62a1c7;border-radius:50%;opacity:.6}
+.statline em{display:block;color:#d8eefa;font:13px/1.55 var(--mono);letter-spacing:-.02em;margin-top:8px;overflow-wrap:anywhere}
+#correlation{border-top:1px solid var(--stroke-soft);padding-top:11px;margin-top:17px}
+.small-note{margin-top:10px;color:#8adacf;font-size:11px;line-height:1.7}
+.warnings{margin-top:12px;display:grid;gap:7px}
+.warning{padding:10px 12px;border:1px solid #665637;border-left:2px solid var(--amber);background:rgba(121,91,34,.16);border-radius:7px;color:#e9d7b5;font-size:11px;line-height:1.65}
+.warning.danger{background:rgba(126,45,67,.18);border-color:#683747;border-left-color:var(--red);color:#ffc1c8}
+.warning.info{background:rgba(31,89,126,.19);border-color:#315b76;border-left-color:#74bbed;color:#c3dfee}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}
+.actions button{flex:1;min-width:110px;white-space:nowrap;padding:9px 12px;border:1px solid #354f6c;background:#182a41;color:#c4d7e9;font-size:11.5px}
+.actions button:hover{border-color:#67c5d4;color:#ddfffa;background:#193b51}
+/* ───────────────────────── Chart & tables ───────────────────────── */
+.chart-panel{padding-bottom:22px}
+.chart-legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:-5px 0 12px;color:#bed0df;font-size:11px}
+.chart-legend span{display:flex;align-items:center;gap:6px}
+.chart-legend em{font:10px var(--mono);color:#7896b0;font-style:normal;margin-left:auto}
+.legend-block{display:inline-block;width:11px;height:11px;border-radius:3px;background:linear-gradient(160deg,#67d9d4,#4c8cf2)}
+.legend-line{width:16px;height:2px;display:inline-block;background:#efc286;border-radius:3px}
+#chart{display:block;width:100%;height:auto;background:linear-gradient(145deg,#0a1625,#101e30);border:1px solid #263c58;border-radius:11px}
+.gridline{stroke:#38506b;stroke-width:.7;stroke-dasharray:3 5}
+.axislabel{fill:#91abc3;font:10px var(--mono)}
+.bar{fill:url(#barGradient);opacity:.83}
+.cumline{fill:none;stroke:#efc68b;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cum-end{fill:#ffd79c;stroke:#182b3b;stroke-width:2}
+details{margin-top:13px;border:1px solid #2b4059;background:rgba(8,20,36,.45);border-radius:10px;overflow:hidden;color:#bbcedd}
+summary{cursor:pointer;padding:12px 14px;font-size:12px;font-weight:600;list-style-position:inside;transition:background-color .18s}
+summary:hover{background:#1a2b40;color:#e2f5ff}
+details[open] summary{border-bottom:1px solid #284159}
+.tableScroller{max-height:340px;overflow:auto}
+table{width:100%;border-collapse:collapse;font:11px/1.4 var(--mono);min-width:390px}
+th,td{padding:10px 11px;text-align:right;border-bottom:1px solid #25364b}
+th{position:sticky;top:0;z-index:1;background:#15283e;font-family:var(--font);color:#8ed9e0;font-weight:650}
+tr:nth-child(2n) td{background:rgba(25,44,66,.22)}
+tr:hover td{background:rgba(75,118,157,.13)}
+th:first-child,td:first-child{text-align:center}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0 0;padding:13px 14px;border-radius:8px;border:1px solid #2b465b;background:#091a2c;color:#b7e6e9;font:11px/1.9 var(--mono)}
+/* ───────────────────────── Guidance ───────────────────────── */
+.method-grid,.reference-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.method,.reference-grid>div{border:1px solid #2a415a;border-radius:11px;background:linear-gradient(145deg,rgba(20,42,60,.74),rgba(10,28,47,.5));padding:16px}
+.method{position:relative;overflow:hidden}
+.method::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:2px;background:#4bbdbc}
+.method:nth-child(2)::before{background:#7c9cdb}
+.method h3,.reference h3{margin:0 0 9px;color:#a9e6e5;font-size:12px;letter-spacing:.015em}
+.method p,.reference p,.reference li{font-size:11.5px;line-height:1.85;color:#adbed0}
+.method p,.reference p{margin:0 0 8px}
+.reference-grid>div{min-width:0}
+.reference code{display:inline-block;max-width:100%;color:#a6dce8;font:11px/1.8 var(--mono);white-space:normal;overflow-wrap:anywhere}
+.reference details{padding:0}.reference ul{margin:0;padding:12px 20px 15px 32px}.reference li{margin:0 0 6px}
+a{color:#79d7e5;text-underline-offset:2px}a:hover{color:#a8f1e7}
+footer{font:10px/1.65 var(--mono);letter-spacing:.05em;text-align:center;color:#6e89a3;padding:5px 0 31px}
+.toast{position:fixed;z-index:20;left:50%;bottom:20px;transform:translate(-50%,15px);max-width:min(90vw,420px);opacity:0;pointer-events:none;background:#163c4b;color:#ddfff7;border:1px solid #4caaab;box-shadow:0 10px 30px #0008;padding:10px 18px;border-radius:30px;font-size:12px;transition:opacity .2s,transform .2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+/* ───────────────────────── Responsive ───────────────────────── */
+@media(max-width:1280px){.wrap{padding-inline:23px}.layout{grid-template-columns:minmax(315px,342px) minmax(0,1fr);gap:16px}.panel{padding:19px}.brand-row{margin-bottom:16px}.top-inner{gap:25px}.metric{padding:12px 9px}.metric strong{font-size:17px}.statline{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1100px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric,.metric.spotlight{grid-column:span 1}.metric{min-height:92px}.metric strong{font-size:21px}.hero-visual{max-width:420px}.top-inner{grid-template-columns:minmax(0,1fr) minmax(280px,.8fr)}.brand-name{font-size:10px}}
+@media(max-width:870px){.layout{grid-template-columns:minmax(0,1fr)}.top-inner{grid-template-columns:1fr;padding-block:30px;gap:24px}.hero-visual{display:none}.hero-copy{max-width:720px}.top h1{font-size:48px}.notice-label{display:none}.panel h2{font-size:15px}.inputs{display:block}.inputs .field{grid-template-columns:minmax(0,1fr) minmax(0,220px)}.status-strip{flex-wrap:wrap;padding-block:8px}.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}.metric,.metric.spotlight{grid-column:span 1}.statline{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:610px){.wrap{padding-inline:15px}.top-inner{padding-top:25px;padding-bottom:22px}.brand-name{font-size:9px;letter-spacing:.08em}.brand-product,.brand-separator{display:none}.brand-mark{width:32px;height:32px}.brand-mark svg{width:20px;height:20px}.eyebrow{font-size:9px;letter-spacing:.1em}.top h1{font-size:clamp(35px,9vw,45px)}.hero-description{font-size:12px}.hero-tags{gap:5px}.hero-tags span{font-size:10px}.status-right{display:none}.notice{padding:12px;margin-bottom:15px;align-items:flex-start}.notice-icon{margin-top:2px}.panel{padding:17px 15px;margin-bottom:14px;border-radius:12px}.panel h2{font-size:14px;gap:7px}.panel h2 small{font-size:9px}.inputs .field,.field{grid-template-columns:1fr;gap:5px;margin:11px 0}.field small{display:inline;margin-left:6px}.metrics,.statline{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{min-height:95px;padding:12px}.metric strong{font-size:18px}.statline>div{padding:10px}.statline em{font-size:12px}.method-grid,.reference-grid{grid-template-columns:1fr}.chart-legend em{width:100%;margin-left:0}.actions button{flex:1 1 45%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button,.toast,.field input,.field select{transition:none}}
+
+/* v2.4 — academic mathematics with editorial alignment and measured scale. */
+.reference-formulas{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+.reference-formulas>.formula-card{min-width:0;overflow:hidden;padding:0;background:linear-gradient(135deg,#13263b 0%,#101f32 48%,#0c1a2b 100%);border:1px solid #2b4964;border-radius:14px;box-shadow:inset 0 1px 0 rgba(211,243,255,.045),0 12px 25px rgba(0,5,14,.12)}
+.formula-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 24px;padding:20px 0 17px;border-bottom:1px solid rgba(122,162,190,.17)}
+.formula-head-title{display:flex;align-items:center;gap:11px;min-width:0}
+.formula-index{display:inline-grid;place-items:center;width:27px;height:27px;flex:0 0 27px;border-radius:7px;border:1px solid rgba(94,225,209,.24);background:rgba(92,213,211,.06);color:#70c9c5;font:10px/1 var(--mono)}
+.reference-formulas .formula-head h3{font-size:15px;font-weight:700;letter-spacing:.01em;color:#e5f8f5;margin:0;white-space:nowrap}
+.formula-topic{color:#7497ac;font:9px/1 var(--mono);letter-spacing:.15em;white-space:nowrap}
+.equations{display:flex;flex-direction:column;gap:0;max-width:590px;margin-inline:auto;padding:13px 19px 22px}
+.equation{position:relative;display:grid;grid-template-columns:minmax(125px,39%) 22px minmax(0,1fr);align-items:center;gap:9px;min-height:69px;padding:9px 2px;border-radius:8px;transition:background .17s}
+.equation + .equation{border-top:1px solid rgba(101,140,171,.085)}
+.equation:hover{background:rgba(103,184,210,.045)}
+.eq-lhs,.eq-rhs{min-width:0;display:flex;align-items:center}
+.eq-lhs{justify-content:flex-end;text-align:right}
+.eq-rhs{justify-content:flex-start;flex-wrap:wrap;column-gap:13px;row-gap:4px}
+.eq-rel{font:400 27px/1.2 "Cambria Math","STIX Two Math", "DejaVu Serif",Georgia,serif;text-align:center;color:#80d4d0}
+.equation math{color:#edf5fe;font-family:"Cambria Math","STIX Two Math","Latin Modern Math","STIX", "Noto Serif Math",math,serif;font-size:25px;line-height:1.55;font-weight:400;white-space:nowrap;max-width:none}
+.eq-lhs math{color:#d8e9fb}
+.eq-rhs math{color:#f5faff}
+.equation-range{display:inline-block;padding:3px 6px;border:1px solid rgba(104,141,171,.2);border-radius:5px;background:rgba(11,29,46,.6);color:#9bb8d1;font:10px/1.4 var(--mono);letter-spacing:.005em;white-space:nowrap}
+.math-assumptions{margin-top:18px;border:1px solid #2d465f;border-radius:10px;background:rgba(8,22,39,.5);color:#afcbd8}
+.math-assumptions summary{padding:13px 16px;cursor:pointer;font-size:12px;font-weight:600;color:#a6dfdc;list-style-position:inside}
+.math-assumptions summary span{float:right;color:#6f91ad;font:10px/1.8 var(--mono);letter-spacing:.08em}
+.math-assumptions[open] summary{border-bottom:1px solid #2d465f}
+.math-notes-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;padding:14px 18px}
+.math-notes-grid p{margin:0;color:#adbed0;font-size:11.5px;line-height:1.8}
+.math-notes-grid strong{color:#c6e6e9}
+@media(max-width:1160px){.reference-formulas{grid-template-columns:1fr}.equations{max-width:660px}.equation{grid-template-columns:minmax(120px,38%) 22px minmax(0,1fr)}}
+@media(max-width:610px){.reference-formulas{gap:12px}.formula-head{margin:0 15px;padding:16px 0 13px}.formula-topic{font-size:8px;letter-spacing:.04em}.reference-formulas .formula-head h3{font-size:14px}.equations{padding:12px 12px 18px}.equation{grid-template-columns:minmax(82px,30%) 19px minmax(0,1fr);gap:5px;padding:8px 1px;min-height:67px}.equation math{font-size:21px}.eq-rel{font-size:23px}.equation-range{font-size:9px;padding:2px 4px}.math-notes-grid{grid-template-columns:1fr}.math-assumptions summary span{display:none}}
+@media(max-width:390px){.equation{grid-template-columns:minmax(74px,28%) 17px minmax(0,1fr);gap:3px}.equation math{font-size:19px}.eq-rel{font-size:20px}}
+@media(prefers-reduced-motion:reduce){.equation{transition:none}}
+/* Narrow phones: preserve the entire Petukhov expression without horizontal clipping. */
+@media(max-width:430px){
+  .formula-card:nth-child(4) .equation:last-child{grid-template-columns:48px 17px minmax(0,1fr);gap:3px}
+  .formula-card:nth-child(4) .equation:last-child .eq-rhs math{font-size:clamp(16px,4.5vw,19px)}
+}
+@media(max-width:360px){
+  .formula-card:nth-child(4) .equation:last-child{grid-template-columns:45px 15px minmax(0,1fr);gap:2px}
+  .formula-card:nth-child(4) .equation:last-child .eq-rhs math{font-size:15px}
+}
+
+/* v2.5 — Governing equations are optional reference material. */
+.reference-collapsed{padding:0;overflow:hidden}
+.reference details.math-section{margin:0;padding:0;border:0;border-radius:inherit;background:transparent;overflow:visible}
+.reference .math-section-summary{display:flex;align-items:center;gap:11px;list-style:none;cursor:pointer;padding:19px 23px;min-height:72px;user-select:none;background:transparent;border:0;transition:background-color .2s ease}
+.reference .math-section-summary::-webkit-details-marker{display:none}
+.reference .math-section-summary::marker{content:""}
+.reference .math-section-summary:hover{background:rgba(70,149,167,.08)}
+.reference .math-section-summary:focus-visible{outline:2px solid #70d9d2;outline-offset:-4px;border-radius:10px}
+.math-section-title{color:#e6f5f8;font-size:15px;font-weight:730;letter-spacing:.01em}
+.math-section-subtitle{color:#6f95aa;font:9px/1.2 var(--mono);letter-spacing:.12em;margin-left:7px}
+.math-section-toggle{margin-left:auto;display:inline-flex;align-items:center;gap:10px;flex:0 0 auto;color:#9ddfdc;font-size:11px;font-weight:600}
+.math-close-label{display:none}
+.math-section-chevron{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+.math-section[open] .math-close-label{display:inline}
+.math-section[open] .math-open-label{display:none}
+.math-section[open] .math-section-chevron{transform:rotate(180deg)}
+.reference .math-section[open] > .math-section-summary{border-bottom:1px solid #2d455e;background:rgba(43,97,113,.06)}
+.math-section-body{padding:20px 22px 22px;animation:math-section-enter .2s ease-out}
+@keyframes math-section-enter{from{opacity:.55;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:610px){
+  .reference .math-section-summary{min-height:63px;padding:15px 15px;gap:8px}
+  .math-section-title{font-size:14px}
+  .math-section-subtitle{display:none}
+  .math-section-toggle{font-size:10px;gap:7px}
+  .math-section-chevron{width:19px;height:19px}
+  .math-section-body{padding:14px 12px 17px}
+}
+@media(prefers-reduced-motion:reduce){.math-section-chevron{transition:none}.math-section-body{animation:none}}
+
+
+/* v2.6 — bespoke fluid-material library dropdown, fully offline */
+.fluid-select{position:relative;min-width:0;width:100%}
+.fluid-select.enhanced>#preset{display:none}
+.fluid-select.is-open{z-index:30}
+.fluid-picker{position:relative;width:100%;min-width:0}
+.fluid-trigger{width:100%;min-height:49px;padding:6px 9px 6px 7px;display:grid;grid-template-columns:28px minmax(0,1fr) 13px;gap:7px;align-items:center;text-align:left;border:1px solid #35536b;border-radius:9px;background:linear-gradient(145deg,#112a3d,#0b1b2e);box-shadow:inset 0 1px 0 rgba(173,233,245,.06),0 2px 8px rgba(0,0,0,.12);color:#e7f5ff;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s}
+.fluid-trigger:hover{border-color:#60b6c1;background:linear-gradient(145deg,#17354b,#102239);box-shadow:inset 0 1px 0 rgba(173,233,245,.08),0 5px 16px rgba(0,0,0,.17)}
+.fluid-trigger:focus-visible{outline:2px solid #76e5dd;outline-offset:3px}
+.is-open .fluid-trigger{border-color:#72dfd0;background:linear-gradient(145deg,#183648,#10253a);box-shadow:0 0 0 3px rgba(92,212,203,.13)}
+.fluid-current-icon,.fluid-option-icon{display:grid;place-items:center;flex:none;font-weight:720;border:1px solid rgba(113,229,217,.32);color:#9df4df;background:linear-gradient(145deg,rgba(79,212,182,.19),rgba(49,122,160,.13))}
+.fluid-current-icon{width:28px;height:32px;border-radius:7px;font-size:12px}
+.fluid-current-icon[data-kind=liquid],.fluid-option-icon[data-kind=liquid]{color:#9bd8ff;border-color:rgba(112,181,251,.37);background:linear-gradient(145deg,rgba(72,151,224,.24),rgba(47,96,191,.1))}
+.fluid-current-icon[data-kind=custom],.fluid-option-icon[data-kind=custom]{color:#b3bce9;border-color:rgba(163,171,230,.32);background:linear-gradient(145deg,rgba(135,122,211,.19),rgba(74,96,148,.15))}
+.fluid-current-copy{display:flex;flex-direction:column;min-width:0;line-height:1.2;gap:5px}
+.fluid-current-copy strong{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11.5px;letter-spacing:.01em;font-weight:720;color:#e5fbfa}
+.fluid-current-copy small{display:block;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#87a8ba;font:9px/1.1 var(--mono)}
+.fluid-chevron{color:#8db5c9;transition:transform .22s ease,color .22s ease}
+.is-open .fluid-chevron{transform:rotate(180deg);color:#86eadb}
+.fluid-menu{position:absolute;top:calc(100% + 9px);right:0;z-index:70;width:min(310px,calc(100vw - 36px));max-height:min(427px,calc(100vh - 38px));overflow-y:auto;padding:10px;border:1px solid #42647b;border-radius:14px;background:linear-gradient(145deg,rgba(23,45,65,.985),rgba(13,28,47,.99) 67%);box-shadow:0 24px 58px rgba(0,6,19,.66),0 0 0 1px rgba(119,222,223,.05) inset;backdrop-filter:blur(18px);scrollbar-color:#46758a transparent;scrollbar-width:thin;animation:fluid-menu-in .17s cubic-bezier(.2,.85,.2,1) both;outline:none}
+.fluid-menu.opens-up{top:auto;bottom:calc(100% + 9px);transform-origin:bottom right;animation-name:fluid-menu-up}
+@keyframes fluid-menu-in{from{opacity:0;transform:translateY(-6px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fluid-menu-up{from{opacity:0;transform:translateY(6px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.fluid-menu-top{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:3px 8px 10px;border-bottom:1px solid rgba(106,147,170,.24);margin-bottom:5px}
+.fluid-menu-top strong{color:#d3f7f0;font:700 10.5px var(--font);letter-spacing:.04em}
+.fluid-menu-top span{font:9px var(--mono);letter-spacing:.1em;color:#7896b2}
+.fluid-group-label{display:flex;justify-content:space-between;align-items:center;margin:9px 8px 5px;font-size:10px;font-weight:650;color:#81a6bb;letter-spacing:.07em}
+.fluid-group-label::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,rgba(106,143,164,.18),transparent);margin-left:12px}
+.fluid-option{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr) 18px;align-items:center;gap:10px;width:100%;margin:2px 0;padding:9px 9px;text-align:left;background:transparent;border:1px solid transparent;border-radius:9px;color:#e4f2fa;cursor:pointer;transition:background .14s,border-color .14s,box-shadow .14s}
+.fluid-option:hover,.fluid-option:focus-visible{background:#1c3b50;border-color:#3f7385;color:#f3ffff;box-shadow:inset 0 1px rgba(176,242,240,.05);outline:none}
+.fluid-option[aria-selected=true]{background:linear-gradient(100deg,rgba(45,126,132,.24),rgba(40,103,128,.09));border-color:rgba(94,205,197,.48)}
+.fluid-option[aria-selected=true]::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:2px;border-radius:0 2px 2px 0;background:#76e8d4}
+.fluid-option-icon{width:36px;height:36px;border-radius:9px;font-size:15px}
+.fluid-option-body{display:flex;flex-direction:column;min-width:0;gap:3px}
+.fluid-option-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:640;line-height:1.35;color:#e2effa}
+.fluid-option-temp{font:9px var(--mono);color:#8eafc6;background:rgba(83,115,151,.14);border:1px solid rgba(115,154,183,.19);border-radius:4px;padding:2px 5px;white-space:nowrap}
+.fluid-option-meta{font:10px/1.45 var(--mono);color:#8aa5bb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fluid-option-check{display:grid;place-items:center;color:#8aefd8;opacity:0;transform:scale(.76);transition:transform .15s,opacity .15s}
+.fluid-option[aria-selected=true] .fluid-option-check{opacity:1;transform:scale(1)}
+.fluid-option[aria-selected=true] .fluid-option-title{color:#c5fff0}
+.fluid-menu-footer{border-top:1px solid rgba(98,150,174,.18);margin-top:8px;padding:10px 8px 2px;color:#7591a7;font-size:10px;line-height:1.5}
+@media(max-width:610px){.fluid-picker{max-width:100%}.fluid-menu{width:min(320px,calc(100vw - 44px));max-height:min(388px,calc(100vh - 34px))}.fluid-trigger{min-height:51px}}
+@media(prefers-reduced-motion:reduce){.fluid-menu{animation:none}.fluid-chevron,.fluid-option,.fluid-option-check{transition:none}}
+
+/* Prism Layer Studio 2.2 – interactive, original mesh-visualization hero.
+   Offline SVG / CSS only; respects reduced motion and keyboard navigation. */
+.top-inner{grid-template-columns:minmax(0,.84fr) minmax(0,1.16fr);min-height:595px;gap:clamp(22px,4vw,76px);padding-block:56px 50px}
+.top-glow{width:960px;height:780px;opacity:1}
+.top h1{font-size:clamp(49px,5.15vw,82px);letter-spacing:-.06em;line-height:1.025;margin:23px 0 20px}
+.hero-description{font-size:clamp(13px,1.13vw,16px);line-height:1.95;max-width:530px}
+.hero-tags{margin-top:28px;gap:9px}
+.hero-tags span{padding:7px 12px}
+.hero-copy{position:relative;min-width:0}
+.hero-explore{display:inline-flex;align-items:center;gap:36px;margin-top:37px;padding:13px 15px 13px 20px;border:1px solid #86f3e0;border-radius:9px;background:linear-gradient(105deg,#69e6d4,#b1f5e8);color:#062231;font-weight:750;font-size:13px;letter-spacing:.025em;box-shadow:0 13px 32px rgba(65,225,202,.16);cursor:pointer}
+.hero-explore span{font-size:18px;line-height:1;transition:transform .25s ease}
+.hero-explore:hover{background:#c0fcf0;transform:translateY(-2px);box-shadow:0 16px 32px rgba(65,225,202,.23)}
+.hero-explore:hover span{transform:translate(3px,-3px)}
+.hero-visual.hero-interactive{display:block;width:100%;max-width:720px;justify-self:end;margin:0;overflow:hidden;border-radius:18px;border-color:rgba(104,206,218,.31);background:radial-gradient(ellipse 84% 88% at 51% 42%,rgba(13,58,76,.61),rgba(11,24,42,.95) 65%),#0b192a;box-shadow:0 32px 82px rgba(0,4,17,.53),inset 0 1px 0 rgba(182,255,241,.07);outline-offset:5px;isolation:isolate}
+.hero-interactive:focus-visible{outline:2px solid var(--accent)}
+.hero-interactive .visual-top{padding:12px 17px;background:rgba(5,18,33,.35)}
+.hero-signal{display:inline-block;height:6px;width:6px;background:#56e8d9;box-shadow:0 0 10px #41e3d2;border-radius:50%;margin-right:5px;vertical-align:1px}
+.hero-tool{display:flex;align-items:center;gap:14px}
+.hero-motion-toggle{background:transparent;border:1px solid #41617a;border-radius:5px;color:#9ac0cd;font:10px var(--mono);letter-spacing:.025em;padding:5px 9px;cursor:pointer}
+.hero-motion-toggle:hover,.hero-motion-toggle[aria-pressed="true"]{border-color:#81f1dd;color:#cdfbf2}
+.hero-scene{height:auto;aspect-ratio:620 / 400;position:relative;isolation:isolate;overflow:hidden;cursor:crosshair;--glow-x:50%;--glow-y:50%}
+.hero-scene::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.42;background:radial-gradient(ellipse 36% 38% at var(--glow-x) var(--glow-y),rgba(97,234,220,.24),rgba(51,116,173,.045) 55%,transparent 100%);mix-blend-mode:screen}
+.scene-aurora{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 57% 44% at 59% 43%,rgba(56,152,176,.19),transparent 78%);filter:blur(22px)}
+.scene-tilt{width:100%;height:100%;transform-origin:50% 50%;transform-style:preserve-3d;will-change:transform;perspective:950px}
+.hero-mesh{display:block;width:100%;height:100%;overflow:visible;user-select:none}
+.hero-mesh .hero-base-layer{stroke:#65a4bc;stroke-width:1.3;fill:rgba(75,136,170,.052)}
+.hero-mesh .hero-reveal-layer{stroke:url(#heroBand);stroke-width:1.65;fill:rgba(64,225,207,.075);filter:drop-shadow(0 0 5px rgba(78,215,208,.25))}
+.hero-mesh .hero-base-line{stroke:rgba(100,161,189,.24);stroke-width:1.15;fill:none}
+.hero-mesh .hero-reveal-line{stroke:rgba(137,245,236,.85);stroke-width:1.2;fill:none}
+.hero-mesh .hero-wall{stroke:#b7e7ed;stroke-width:2.8;stroke-linecap:round;fill:none;filter:drop-shadow(0 0 4px rgba(83,243,233,.38))}
+.hero-mesh .hero-selected-layer{fill:rgba(96,227,211,.16);stroke:#aafaf0;stroke-width:2;filter:drop-shadow(0 0 5px rgba(104,228,219,.64))}
+.hero-mesh .scene-svg-caption{font:9.5px var(--mono);letter-spacing:.06em;fill:#648aa4}
+.hero-mesh #heroProbe{pointer-events:none}
+.hero-mesh #heroProbe line{stroke:#b8fff0;stroke-width:1.15;stroke-dasharray:3 4}
+.hero-mesh #heroProbe circle{fill:#ccfff7;stroke:#42e6d8;stroke-width:2}
+.hero-mesh #heroProbe .probe-text{fill:#c3fff5;font:11px var(--mono);paint-order:stroke;stroke:#0a2634;stroke-width:3.5px}
+.scene-crosshint,.scene-coordinates{position:absolute;bottom:16px;pointer-events:none;font:10px var(--mono);color:#80a4b9;letter-spacing:.1em}
+.scene-crosshint{left:19px}
+.scene-crosshint span{color:#54e8dc;margin-inline:7px}
+.scene-coordinates{right:19px;color:#89c4cf}
+.scene-ripples{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.scene-ripple{position:absolute;width:18px;height:18px;border:1px solid #a9fce8;border-radius:50%;transform:translate(-50%,-50%) scale(.1);opacity:1;box-shadow:0 0 14px rgba(83,230,213,.5);animation:hero-ripple .72s cubic-bezier(.19,.75,.33,1) forwards}
+@keyframes hero-ripple{0%{transform:translate(-50%,-50%) scale(.15);opacity:1}100%{transform:translate(-50%,-50%) scale(11);opacity:0}}
+.hero-interactive .scene-inspector{display:flex;align-items:center;gap:12px;min-height:75px;padding:12px 18px;border-top:1px solid rgba(102,189,192,.24);background:linear-gradient(90deg,rgba(9,42,53,.72),rgba(9,26,43,.74))}
+.inspector-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;color:#89f5e2;background:rgba(69,222,202,.11);border:1px solid rgba(81,224,211,.25);font-size:22px}
+.inspector-copy{min-width:0;display:flex;flex-direction:column;gap:3px;flex:1}
+.inspector-label{color:#7ea5b8;font:9px var(--mono);letter-spacing:.16em}
+.inspector-copy b{font-weight:600;color:#d5f4f5;font-size:12px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.inspector-index{font:11px var(--mono);color:#81f2de;white-space:nowrap}
+.hero-interactive .visual-bottom{min-height:43px;background:rgba(5,17,32,.55)}
+@media(max-width:1200px){.top-inner{gap:28px;grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr)}.top h1{font-size:clamp(42px,4.2vw,64px)}.hero-interactive .visual-top{padding:9px 12px}.hero-interactive .visual-bottom{padding:9px 12px}.scene-crosshint{font-size:8px}.scene-coordinates{font-size:8px}}
+@media(max-width:920px){.top-inner{grid-template-columns:1fr;min-height:0;gap:30px;padding-block:34px}.hero-visual.hero-interactive{max-width:760px;margin:0 auto;justify-self:stretch}.top h1{font-size:clamp(43px,7vw,64px)}.hero-explore{margin-top:23px}}
+@media(max-width:520px){.hero-scene{aspect-ratio:620 / 450}.hero-mesh{height:100%}.hero-tool{gap:8px}.hero-motion-toggle{font-size:9px}.visual-eyebrow{font-size:8px}.hero-interactive .visual-top{flex-wrap:wrap}.hero-interactive .visual-bottom .visual-formula{font-size:11px}.inspector-copy b{font-size:11px}.scene-crosshint{bottom:8px;left:10px;font-size:7px}.scene-coordinates{bottom:8px;right:10px;font-size:7px}.hero-interactive .scene-inspector{padding:10px}}
+@media(prefers-reduced-motion:reduce){.hero-scene,.hero-scene *, .hero-explore, .hero-explore *{animation-duration:.01ms!important;transition-duration:.01ms!important}.hero-scene .scene-ripples{display:none}}
+/* Sections reveal as the user reaches the engineering workspace. The class is JS opt-in. */
+.motion-ready .reveal-on-scroll{opacity:0;transform:translateY(16px);transition:opacity .58s cubic-bezier(.2,.8,.2,1),transform .58s cubic-bezier(.2,.8,.2,1)}
+.motion-ready .reveal-on-scroll.is-visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){.motion-ready .reveal-on-scroll{opacity:1!important;transform:none!important;transition:none!important}}
+
+.hero-invalid .scene-inspector{border-color:rgba(255,150,160,.35)}
+.hero-invalid .inspector-label{color:#ffb1b7}
+
+</style></head>
+<body>
+<header class="top">
+  <div class="top-glow" aria-hidden="true"></div>
+  <div class="wrap top-inner">
+    <div class="hero-copy">
+      <div class="brand-row"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><path d="M6 23.5 18 29l12-5.5M6 17.5 18 23l12-5.5M18 6 31 12l-13 6L5 12l13-6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div><div class="brand-name">PRISM / ENGINEERING WORKSPACE</div><div class="brand-separator"></div><span class="brand-product">CFD TOOLKIT</span></div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> BOUNDARY LAYER · MESH GENERATION</div>
+      <h1>Prism Layer <span>Studio</span><span class="title-dot">.</span></h1>
+      <p class="hero-description">让近壁网格设计从经验试错，变成可计算、可校准的工程工作流。</p>
+      <div class="hero-tags"><span><i class="tag-dot"></i> STAR-CCM+ 参数辅助</span><span>正向 / 反向设计</span><span>翼型局部估算</span></div>
+      <button type="button" class="hero-explore" id="heroExplore">探索计算工作台 <span aria-hidden="true">↗</span></button>
+    </div>
+    <div class="hero-visual hero-interactive" id="heroInteractive" tabindex="0" role="group" aria-label="交互棱柱层模型：移动鼠标观察局部网格，点击选中网格层，按左右方向键切换选中的层">
+      <div class="visual-top"><span class="visual-eyebrow"><span class="hero-signal"></span> INTERACTIVE MESH FIELD</span><div class="hero-tool"><span class="visual-live"><i></i> LIVE MODEL</span><button type="button" class="hero-motion-toggle" id="heroMotionToggle" aria-pressed="false">暂停动效</button></div></div>
+      <div class="hero-scene" id="heroScene">
+        <div class="scene-aurora"></div>
+        <div class="scene-tilt" id="sceneTilt">
+          <svg id="heroMesh" class="hero-mesh" viewBox="0 0 620 400" role="img" aria-label="随计算结果变化的可交互棱柱层曲面网格">
+            <defs>
+              <pattern id="heroGrid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M 24 0 L 0 0 0 24" fill="none" stroke="#527b94" stroke-opacity=".18" stroke-width=".75"/></pattern>
+              <linearGradient id="heroBand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#52eccd" stop-opacity=".85"/><stop offset=".54" stop-color="#59b5ff" stop-opacity=".8"/><stop offset="1" stop-color="#6d79f1" stop-opacity=".6"/></linearGradient>
+              <radialGradient id="heroRevealGradient" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="white" stop-opacity="1"/><stop offset=".60" stop-color="white" stop-opacity=".85"/><stop offset="1" stop-color="black" stop-opacity="0"/></radialGradient>
+              <mask id="heroRevealMask" maskUnits="userSpaceOnUse"><rect width="620" height="400" fill="black"/><circle id="heroReveal" cx="310" cy="205" r="155" fill="url(#heroRevealGradient)"/></mask>
+              <filter id="heroSoftGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+            </defs>
+            <rect width="620" height="400" fill="url(#heroGrid)"/>
+            <g id="heroOrbits" fill="none" stroke="#467e9f" stroke-opacity=".26"><ellipse cx="315" cy="205" rx="258" ry="133" stroke-dasharray="4 12"/><ellipse cx="315" cy="205" rx="212" ry="103" stroke-dasharray="3 17"/></g>
+            <g id="heroMeshBase"></g><g id="heroMeshReveal" mask="url(#heroRevealMask)"></g><g id="heroProbe"></g>
+          </svg>
+        </div>
+        <div class="scene-ripples" id="sceneRipples" aria-hidden="true"></div>
+        <div class="scene-crosshint" aria-hidden="true">MOVE TO REVEAL <span>✳</span> CLICK TO PROBE</div>
+        <div class="scene-coordinates" id="sceneCoordinates" aria-hidden="true">X 0.500 &nbsp; / &nbsp; Y 0.500</div>
+      </div>
+      <div class="scene-inspector" aria-live="polite"><span class="inspector-mark" aria-hidden="true">⌖</span><div class="inspector-copy"><span class="inspector-label" id="heroInspectionLabel">INTERACTIVE SURFACE PROBE</span><b id="heroInspectionValue">将鼠标移入模型，点击任意一层</b></div><span class="inspector-index" id="heroInspectionIndex">— / —</span></div>
+      <div class="visual-bottom"><span><b>01</b> MOVE / REVEAL / SELECT</span><span class="visual-formula" id="heroFormula">y⁺ → w → T</span></div>
+    </div>
+  </div>
+  <div class="wrap status-strip"><div class="status-left"><span class="status-dot"></span> <b>本地计算</b><span class="status-sep"></span>无外部依赖 <span class="status-sep"></span>离线可用</div><div class="status-right">PRISM LAYER STUDIO <b>v2.6</b></div></div>
+</header>
+<main class="wrap">
+<div class="notice"><span class="notice-icon" aria-hidden="true">i</span><div><strong>工程模型说明</strong><p>结果基于经验公式，用于 STAR-CCM+ 网格初始设计。<b>预测 y⁺ 不等于求解器实际 Wall Y⁺</b>，请在 CFD 求解后检查局部分布并迭代校准。</p></div><span class="notice-label">MODEL ASSUMPTION</span></div>
+<div class="layout">
+<section class="panel inputs" id="inputsSection">
+<h2><span class="num">01</span> <span>物性与几何工况</span><small>INPUT PARAMETERS</small></h2>
+<div class="field fluid-preset-field">
+  <label for="preset" id="presetLabel">物性预设</label>
+  <div class="fluid-select" id="fluidSelect">
+    <select id="preset" aria-label="流体物性预设"><option value="custom">自定义</option><option value="air25" selected>空气 25°C</option><option value="air15">空气 15°C</option><option value="water20">水 20°C</option><option value="nitrogen25">氮气 25°C</option><option value="co225">CO₂ 25°C</option></select>
+    <div class="fluid-picker" id="fluidPicker" hidden>
+      <button type="button" class="fluid-trigger" id="fluidTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="fluidMenu" aria-labelledby="presetLabel fluidCurrentName" aria-describedby="fluidCurrentMeta">
+        <span class="fluid-current-icon" id="fluidCurrentIcon" aria-hidden="true">气</span>
+        <span class="fluid-current-copy"><strong id="fluidCurrentName">空气 25°C</strong><small id="fluidCurrentMeta">ρ 1.184 kg/m³</small></span>
+        <svg class="fluid-chevron" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="fluid-menu" id="fluidMenu" role="listbox" aria-label="流体物性预设" hidden></div>
+    </div>
+  </div>
+</div>
+<div class="field"><label for="rho">密度 ρ <small>kg/m³</small></label><input id="rho" type="number" step="any" value="1.184"></div>
+<div class="field"><label for="viscosityMode">粘度类型</label><select id="viscosityMode"><option value="dynamic">动力粘度 μ（Pa·s）</option><option value="kinematic">运动粘度 ν（m²/s）</option></select></div>
+<div class="field"><label for="viscosity" id="viscosityLabel">动力粘度 μ <small>Pa·s</small></label><input id="viscosity" type="number" step="any" value="1.855e-5"></div>
+<div class="sep"></div>
+<div class="field"><label for="geometry">几何模型</label><select id="geometry"><option value="plate">平板外流</option><option value="wing">翼型 / 机翼局部近似</option><option value="pipe">光滑圆管内流</option></select></div>
+<div class="field"><label id="lengthLabel" for="length">参考长度 L <small>m</small></label><input id="length" type="number" min="0" step="any" value="1"></div>
+<div class="field"><label for="U">来流 / 管内平均速度 U <small>m/s</small></label><input id="U" type="number" min="0" step="any" value="10"></div>
+<div id="outerFields"><div class="field"><label for="xFraction">局部计算位置 x/L <small>0–1</small></label><input id="xFraction" type="number" min="0.000001" max="1" step="any" value="1"></div><div class="field" id="sideRow" hidden><label for="surface">翼型表面（仅标记）</label><select id="surface"><option value="suction">吸力面</option><option value="pressure">压力面</option></select></div><div class="field"><label for="flow">局部流动假设</label><select id="flow"><option value="turbulent">全湍流平板近似</option><option value="laminar">层流平板近似</option><option value="transition">转捩参考（层流 / 湍流范围）</option></select></div></div>
+<div class="field"><label for="manualCf">手动 Cf <small>0=自动</small></label><input id="manualCf" type="number" min="0" step="any" value="0"></div>
+<p class="helper">外流采用<strong>局部</strong>摩擦系数；圆管采用 Fanning 摩擦因子（非 Darcy）。手动 Cf 可取自可靠实验或 CFD 结果。</p>
+<div class="sep"></div>
+<h2><span class="num">02</span> <span>棱柱层设计</span><small>DESIGN MODE</small></h2>
+<div class="mode-tabs" id="modeTabs"><button type="button" class="active" data-mode="forward">正向计算</button><button type="button" data-mode="inverseN">反求层数</button><button type="button" data-mode="inverseR">反求拉伸</button><button type="button" data-mode="calibrate">实测校准</button></div>
+<p class="mode-intro" id="modeDescription">目标 y+、层数 N、增长率 r → 预测首层厚度和总厚度。</p>
+<div class="field"><label for="targetYplus">目标 y⁺</label><input id="targetYplus" type="number" step="any" value="1"></div>
+<div class="field" id="nRow"><label for="N">层数 N</label><input id="N" type="number" min="1" max="500" step="1" value="10"></div>
+<div class="field" id="rRow"><label for="r">增长率 r</label><input id="r" type="number" min="1" max="5" step="any" value="1.2"></div>
+<div class="field" id="targetTRow" hidden><label for="targetTmm">目标棱柱层总厚度 <small>mm</small></label><input id="targetTmm" type="number" min="0" step="any" value="10"></div>
+<div id="calibrationFields" hidden><div class="field"><label for="previousWum">旧首层厚度 <small>μm</small></label><input id="previousWum" type="number" min="0" step="any" value="70"></div><div class="field"><label for="measuredYplus">实测局部 Wall Y⁺</label><input id="measuredYplus" type="number" min="0" step="any" value="2"></div><p class="helper">请使用和该厚度对应的实际 Wall Y+（同一表面位置或相应统计口径），不可用本工具的预测值冒充实测。</p></div>
+<div class="field"><label for="coreCellMm">核心网格参考尺寸 <small>mm，可填 0</small></label><input id="coreCellMm" type="number" min="0" step="any" value="0"></div>
+<button id="calcButton" class="primary">重新计算</button><button id="resetButton" class="secondary">恢复默认示例</button>
+<div id="error" class="error" role="alert" hidden></div>
+</section>
+<section class="content">
+<div class="panel"><h2><span class="num">03</span> <span>设计结果</span><small>MODEL OUTPUT</small></h2>
+<div class="metrics"><div class="metric spotlight"><label>首层完整厚度 w</label><strong id="outW">—</strong><small id="outWm">—</small></div><div class="metric spotlight"><label>棱柱层总厚度 T</label><strong id="outT">—</strong><small id="outTm">—</small></div><div class="metric"><label>层数 N</label><strong id="outN">—</strong></div><div class="metric"><label>层间增长率 r</label><strong id="outR">—</strong></div></div>
+<div class="statline"><div>局部 Re<em id="outRe">—</em></div><div>Fanning / 局部 Cf<em id="outCf">—</em></div><div>摩擦速度 uτ<em id="outUtau">—</em></div><div>预测首层质心 y⁺<em id="outYp">—</em></div><div>估算 δ99<em id="outDelta">—</em></div><div>末层厚度 hN<em id="outLast">—</em></div><div>T / δ99<em id="outRatio">—</em></div><div>末层 / 核心单元<em id="outCoreRatio">—</em></div></div>
+<p id="correlation" class="helper"></p><div id="extraInfo" class="small-note"></div><div id="warnings" class="warnings"></div>
+<div class="actions"><button id="copyButton">复制 STAR-CCM+ 设置</button><button id="csvButton">导出 CSV</button><button id="jsonButton">导出 JSON</button></div></div>
+<div class="panel chart-panel"><h2><span class="num">04</span> <span>层厚分布</span><small>LOG SCALE</small></h2><div class="chart-legend"><span><i class="legend-block"></i> 单层厚度</span><span><i class="legend-line"></i> 累计厚度</span><em>对数坐标 · 单位 mm</em></div><svg id="chart" role="img" aria-label="棱柱层厚度分布与累计厚度曲线" viewBox="0 0 760 240"></svg><p class="helper">蓝色柱为单层厚度，黄色线为累计厚度；纵轴对数尺度，线和柱使用相同的长度单位。</p><details><summary>展开各层数据（前 100 层，完整数据可导出 CSV）</summary><div class="tableScroller"><table><thead><tr><th>层号</th><th>单层厚度 mm</th><th>累计 mm</th><th>预测质心 y⁺</th></tr></thead><tbody id="layerTable"></tbody></table></div></details></div>
+<div class="panel"><h2><span class="num">05</span> <span>STAR-CCM+ 参数映射</span><small>MESH CONTROL</small></h2><div class="method-grid"><div class="method"><h3>标准 Prism Layer Mesher</h3><p>采用 <strong>Geometric Progression / Stretch Factor</strong> 时，主要设置层数、增长率、总厚度；首层厚度为计算结果，不要误当独立自由度。</p><pre id="standardSummary"></pre></div><div class="method"><h3>Advancing Layer Mesher</h3><p>选择 <strong>Geometric Progression / Wall Thickness</strong> 分布模式时，以近壁厚度为控制目标；其他可配置项取决于版本和当前模式。</p><pre id="advancedSummary"></pre></div></div><p class="helper">两种 mesher 不要求同时开启。菜单名称、可编辑字段和实际层厚受软件版本、局部覆盖设置、塌陷层和网格质量约束影响。</p></div>
+</section></div>
+<section class="panel reference reference-collapsed">
+<details class="math-section" id="mathSection">
+  <summary class="math-section-summary" aria-label="展开或收起数学模型与公式">
+    <span class="num">06</span>
+    <span class="math-section-title">数学模型与公式</span>
+    <span class="math-section-subtitle">GOVERNING EQUATIONS</span>
+    <span class="math-section-toggle"><span class="math-open-label">查看公式</span><span class="math-close-label">收起公式</span><svg class="math-section-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+  </summary>
+  <div class="math-section-body">
+<div class="reference-grid reference-formulas">
+<article class="formula-card"><header class="formula-head"><div class="formula-head-title"><span class="formula-index">01</span><h3>首层厚度</h3></div><span class="formula-topic">FIRST CELL</span></header><div class="equations"><div class="equation" aria-label="局部雷诺数"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mrow><mi>ρ</mi><mi>U</mi><mi>x</mi></mrow><mi>μ</mi></mfrac></mstyle></math></span></div>
+<div class="equation" aria-label="壁面剪应力"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>τ</mi><mi>w</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mi>C</mi><mi>f</mi></msub><mi>ρ</mi><msup><mi>U</mi><mn>2</mn></msup></mstyle></math></span></div>
+<div class="equation" aria-label="摩擦速度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>u</mi><mi>τ</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msqrt><mfrac><msub><mi>τ</mi><mi>w</mi></msub><mi>ρ</mi></mfrac></msqrt></mstyle></math></span></div>
+<div class="equation" aria-label="首层厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>w</mi></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mrow><mn>2</mn><msup><mi>y</mi><mo>+</mo></msup><mi>μ</mi></mrow><mrow><mi>ρ</mi><msub><mi>u</mi><mi>τ</mi></msub></mrow></mfrac></mstyle></math></span></div></div></article>
+<article class="formula-card"><header class="formula-head"><div class="formula-head-title"><span class="formula-index">02</span><h3>层厚分布</h3></div><span class="formula-topic">LAYER GROWTH</span></header><div class="equations"><div class="equation" aria-label="第 i 层厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>h</mi><mi>i</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>w</mi><msup><mi>r</mi><mrow><mi>i</mi><mo>−</mo><mn>1</mn></mrow></msup></mstyle></math></span></div>
+<div class="equation" aria-label="厚度之和"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>T</mi></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>h</mi><mi>i</mi></msub></mstyle></math></span></div>
+<div class="equation" aria-label="等厚情况"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>T</mi></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>N</mi><mi>w</mi></mstyle></math><span class="equation-range">r = 1</span></span></div>
+<div class="equation" aria-label="几何级数厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>T</mi></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>w</mi><mfrac><mrow><msup><mi>r</mi><mi>N</mi></msup><mo>−</mo><mn>1</mn></mrow><mrow><mi>r</mi><mo>−</mo><mn>1</mn></mrow></mfrac></mstyle></math><span class="equation-range">r ≠ 1</span></span></div></div></article>
+<article class="formula-card"><header class="formula-head"><div class="formula-head-title"><span class="formula-index">03</span><h3>平板外流</h3></div><span class="formula-topic">FLAT PLATE</span></header><div class="equations"><div class="equation" aria-label="局部层流摩擦系数"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msubsup><mi>C</mi><mrow><mi>f</mi><mo>,</mo><mi>x</mi></mrow><mtext>lam</mtext></msubsup></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mn>0.664</mn><msqrt><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub></msqrt></mfrac></mstyle></math></span></div>
+<div class="equation" aria-label="局部湍流摩擦系数"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msubsup><mi>C</mi><mrow><mi>f</mi><mo>,</mo><mi>x</mi></mrow><mtext>turb</mtext></msubsup></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mn>0.0592</mn><msup><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub><mfrac><mn>1</mn><mn>5</mn></mfrac></msup></mfrac></mstyle></math></span></div>
+<div class="equation" aria-label="层流边界层厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>δ</mi><mrow><mn>99</mn><mo>,</mo><mtext>lam</mtext></mrow></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">≈</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mrow><mn>5</mn><mi>x</mi></mrow><msqrt><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub></msqrt></mfrac></mstyle></math></span></div>
+<div class="equation" aria-label="湍流边界层厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>δ</mi><mrow><mn>99</mn><mo>,</mo><mtext>turb</mtext></mrow></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">≈</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mrow><mn>0.37</mn><mi>x</mi></mrow><msup><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub><mfrac><mn>1</mn><mn>5</mn></mfrac></msup></mfrac></mstyle></math></span></div></div></article>
+<article class="formula-card"><header class="formula-head"><div class="formula-head-title"><span class="formula-index">04</span><h3>光滑圆管</h3></div><span class="formula-topic">SMOOTH PIPE</span></header><div class="equations"><div class="equation" aria-label="充分发展层流 Fanning 摩擦因子"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>C</mi><mi>f</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mn>16</mn><mi mathvariant="normal">Re</mi></mfrac></mstyle></math><span class="equation-range">Re &lt; 2300</span></span></div>
+<div class="equation" aria-label="Blasius 近似"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>C</mi><mi>f</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">≈</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mn>0.0791</mn><msup><mi mathvariant="normal">Re</mi><mrow><mo>−</mo><mn>0.25</mn></mrow></msup></mstyle></math><span class="equation-range">4×10³ ≤ Re ≤ 10⁵</span></span></div>
+<div class="equation" aria-label="Petukhov 光滑圆管近似 Fanning 摩擦因子"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>C</mi><mi>f</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">≈</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msup><mrow><mo>[</mo><mn>4</mn><msup><mrow><mo>(</mo><mn>0.79</mn><mi mathvariant="normal">ln</mi><mo>(</mo><mi mathvariant="normal">Re</mi><mo>)</mo><mo>−</mo><mn>1.64</mn><mo>)</mo></mrow><mn>2</mn></msup><mo>]</mo></mrow><mn>−1</mn></msup></mstyle></math><span class="equation-range">Re &gt; 10⁵</span></span></div></div></article>
+</div>
+<details class="math-assumptions"><summary>公式假设与适用范围 <span>MODEL NOTES</span></summary>
+<div class="math-notes-grid">
+<p><strong>首层厚度：</strong>首层质心近似在 w/2；非正交网格、复杂曲率及局部摩擦系数变化可能导致偏差。预测值不等于求解器的实测 Wall Y⁺。</p>
+<p><strong>层厚分布：</strong>反求层数时向上取整；反求增长率时采用二分求解，不允许 r&lt;1。</p>
+<p><strong>平板外流：</strong>这里使用局部经验关系，不以固定雷诺数阈值代替转捩预测。</p>
+<p><strong>光滑圆管：</strong>假设充分发展流动。2300–4000 为过渡区，需要手动提供 Fanning C<sub>f</sub> 才能计算。</p>
+</div></details>
+  </div>
+</details>
+</section>
+<footer>Prism Layer Studio v2.5 · 离线运行 · 供工程估算，非求解器验证 · 保留原始版本于 legacy/</footer>
+</main>
+<div class="toast" id="toast" aria-live="polite"></div>
+<script>
+/* Prism Layer Studio — calculation engine (browser + Node.js), MIT License */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (root) root.PrismCore = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const PRESETS = {
+    air25: { name: '空气 25°C（常压）', rho: 1.184, mu: 1.855e-5 },
+    air15: { name: '空气 15°C（常压）', rho: 1.225, mu: 1.802e-5 },
+    water20: { name: '水 20°C', rho: 998.2, mu: 1.002e-3 },
+    nitrogen25: { name: '氮气 25°C（近似）', rho: 1.145, mu: 1.776e-5 },
+    co225: { name: '二氧化碳 25°C（近似）', rho: 1.80, mu: 1.49e-5 }
+  };
+  const DEFAULTS = {
+    rho: 1.184, viscosity: 1.855e-5, viscosityMode: 'dynamic',
+    U: 10, length: 1, xFraction: 1, geometry: 'plate', surface: 'suction',
+    flow: 'turbulent', targetYplus: 1, N: 10, r: 1.2,
+    designMode: 'forward', targetTmm: 10, measuredYplus: 2,
+    previousWum: 70, coreCellMm: 0, manualCf: 0
+  };
+  function finitePositive(v, name) {
+    const n = Number(v);
+    if (!Number.isFinite(n) || n <= 0) throw new Error(name + '必须为有限的正数。');
+    return n;
+  }
+  function finiteNonnegative(v, name) {
+    const n = Number(v);
+    if (!Number.isFinite(n) || n < 0) throw new Error(name + '必须为有限且不小于 0 的数。');
+    return n;
+  }
+  function geomSum(n, r) {
+    if (!Number.isInteger(n) || n < 1 || n > 500) throw new Error('层数 N 必须为 1–500 的整数。');
+    if (!Number.isFinite(r) || r < 1 || r > 5) throw new Error('拉伸因子 r 必须在 1–5 之间。');
+    // Direct accumulation avoids cancellation when r is extremely close to 1.
+    let sum = 0, term = 1;
+    for (let i = 0; i < n; i++) {
+      sum += term;
+      if (!Number.isFinite(sum)) throw new Error('几何级数溢出：请降低 N 或 r。');
+      term *= r;
+    }
+    return sum;
+  }
+  function solveN(target, w, r) {
+    finitePositive(target, '目标总厚度'); finitePositive(w, '首层厚度');
+    for (let n = 1; n <= 500; n++) if (w * geomSum(n, r) >= target * (1 - 1e-12)) return n;
+    throw new Error('在 N≤500 的限制下无法达到目标总厚度。请调整目标或 r。');
+  }
+  function solveR(target, w, n) {
+    finitePositive(target, '目标总厚度'); finitePositive(w, '首层厚度');
+    const minimum = n * w;
+    if (target < minimum * (1 - 1e-10))
+      throw new Error('目标总厚度小于 N×首层厚度；r≥1 时不存在解。请减小 N 或增大目标厚度。');
+    if (Math.abs(target - minimum) < Math.max(minimum, target) * 1e-10) return 1;
+    if (n === 1) throw new Error('N=1 时总厚度恒为首层厚度，无法利用拉伸因子改变总厚度。');
+    const totalAt = stretch => {
+      try { return w * geomSum(n, stretch); }
+      catch (err) { if (String(err.message).includes('溢出')) return Infinity; throw err; }
+    };
+    if (totalAt(5) < target) throw new Error('在 r≤5 的限制下达不到目标厚度。请调整目标或 N。');
+    let lo = 1, hi = 5;
+    for (let k = 0; k < 100; k++) {
+      const mid = (lo + hi) / 2;
+      if (totalAt(mid) >= target) hi = mid; else lo = mid;
+    }
+    return (lo + hi) / 2;
+  }
+  function fluidModel(inp, warnings) {
+    const rho = finitePositive(inp.rho, '流体密度 ρ');
+    const viscosity = finitePositive(inp.viscosity, '粘度');
+    const mu = inp.viscosityMode === 'kinematic' ? viscosity * rho : viscosity;
+    const nu = mu / rho;
+    const U = finitePositive(inp.U, '速度 U');
+    const length = finitePositive(inp.length, '几何长度');
+    const geom = inp.geometry || 'plate';
+    if (!['plate', 'pipe', 'wing'].includes(geom)) throw new Error('不支持的几何类型。');
+    const xFraction = geom === 'pipe' ? 1 : finitePositive(inp.xFraction, '位置 x/L');
+    if (xFraction > 1) throw new Error('位置 x/L 应在 (0, 1] 范围内。');
+    const x = geom === 'pipe' ? length : length * xFraction;
+    const re = rho * U * x / mu;
+    if (!Number.isFinite(re) || re <= 0) throw new Error('雷诺数无效，请核对输入数量级。');
+    const reGlobal = rho * U * length / mu;
+    let cf, delta = null, correlation, cfLam = null, cfTurb = null;
+    const manualCf = finiteNonnegative(inp.manualCf ?? 0, '手动摩擦系数 Cf');
+    if (geom === 'pipe') {
+      if (re < 2300) {
+        cf = 16 / re; correlation = '圆管充分发展层流：Fanning Cf = 16/Re';
+        warnings.push({ level: 'info', text: '圆管层流公式适用于充分发展层流；入口发展段不在模型内。' });
+      } else if (re < 4000) {
+        if (manualCf === 0) throw new Error('圆管流动处于 2300≤Re<4000 过渡区，不能可靠自动确定 Cf。请提供实测/外部计算的 Fanning Cf。');
+        cf = manualCf; correlation = '圆管过渡区：用户指定 Fanning Cf';
+        warnings.push({ level: 'warning', text: '圆管处于过渡流，使用用户输入的摩擦系数，需独立验证。' });
+      } else if (re <= 1e5) {
+        cf = 0.0791 * Math.pow(re, -0.25);
+        correlation = '光滑圆管湍流：Blasius Fanning Cf = 0.0791/Re^0.25';
+      } else {
+        cf = 1 / (4 * Math.pow(0.79 * Math.log(re) - 1.64, 2));
+        correlation = '光滑圆管湍流：Petukhov Darcy f/4（Fanning Cf）';
+        if (re > 5e6) warnings.push({ level: 'warning', text: '管流 Re 超出所用 Petukhov 经验关联式常用范围，应使用适用的摩擦定律或实测 Cf。' });
+      }
+      if (manualCf > 0 && !(re >= 2300 && re < 4000)) {
+        cf = manualCf; correlation = '用户输入：Fanning Cf';
+      }
+    } else {
+      cfLam = 0.664 / Math.sqrt(re);
+      cfTurb = 0.0592 * Math.pow(re, -0.2);
+      const flow = inp.flow || 'turbulent';
+      if (flow === 'laminar') {
+        cf = cfLam; delta = 5 * x / Math.sqrt(re);
+        correlation = '平板局部层流 Cf,x = 0.664/√Re_x';
+      } else if (flow === 'turbulent') {
+        cf = cfTurb; delta = 0.37 * x * Math.pow(re, -0.2);
+        correlation = '平板局部全湍流 Cf,x = 0.0592/Re_x^0.2';
+      } else if (flow === 'transition') {
+        // Not a false automatic transition switch: show both local bounds.
+        cf = cfTurb; delta = 0.37 * x * Math.pow(re, -0.2);
+        correlation = '转捩参考：暂以全湍流局部 Cf 计算，额外显示层流/全湍流界限';
+        warnings.push({ level: 'warning', text: '转捩参考不是转捩模型：局部摩擦系数与边界层厚度可能超出简单估算，必须核对仿真数据。' });
+      } else throw new Error('不支持的流动状态。');
+      if (manualCf > 0) { cf = manualCf; correlation = '用户输入：局部表面摩擦系数 Cf'; }
+      if (geom === 'wing') {
+        warnings.push({ level: 'warning', text: '翼型模式仅使用局部平板近似；吸力面/压力面选项只作为标记，不会自动考虑压力梯度、攻角、分离、曲率或转捩。' });
+      }
+      if (re < 1e4) warnings.push({ level: 'warning', text: '局部 Re 较低，平板经验关联式精度有限。' });
+      if (delta !== null) warnings.push({ level: 'info', text: 'δ99 为简化平板估算，不能代表翼型或复杂边界层的真实厚度。' });
+    }
+    if (!Number.isFinite(cf) || cf <= 0) throw new Error('摩擦系数计算失败。');
+    const tau = 0.5 * cf * rho * U * U;
+    const utau = Math.sqrt(tau / rho);
+    return { rho, mu, nu, U, length, x, xFraction, geometry: geom,
+      Re: re, ReGlobal: reGlobal, Cf: cf, cfLam, cfTurb, delta, tau, utau, correlation };
+  }
+  function compute(raw) {
+    const inp = Object.assign({}, DEFAULTS, raw || {});
+    const warnings = [];
+    const flow = fluidModel(inp, warnings);
+    const yp = finitePositive(inp.targetYplus, '目标 y+');
+    let n = Number(inp.N), r = Number(inp.r), w = 2 * yp * flow.mu / (flow.rho * flow.utau);
+    const designMode = inp.designMode;
+    if (designMode === 'inverseN') n = 1; // Hidden N is not an input in this mode.
+    if (designMode === 'inverseR') r = 1; // Hidden r is solved rather than entered.
+    if (!Number.isInteger(n) || n < 1 || n > 500) throw new Error('层数 N 必须为 1–500 的整数。');
+    if (!Number.isFinite(r) || r < 1 || r > 5) throw new Error('拉伸因子 r 必须在 1–5 之间。');
+    let targetT = null, calibration = null;
+    if (designMode === 'inverseN') {
+      targetT = finitePositive(inp.targetTmm, '目标总厚度') / 1000;
+      n = solveN(targetT, w, r);
+    } else if (designMode === 'inverseR') {
+      targetT = finitePositive(inp.targetTmm, '目标总厚度') / 1000;
+      r = solveR(targetT, w, n);
+    } else if (designMode === 'calibrate') {
+      const actual = finitePositive(inp.measuredYplus, '实际 Wall Y+');
+      const oldW = finitePositive(inp.previousWum, '旧首层厚度') / 1e6;
+      w = oldW * yp / actual;
+      calibration = { actual, oldW, scale: yp / actual, predictedAfterByScaling: yp };
+      warnings.push({ level: 'warning', text: '按 w_new = w_old×(y+目标/y+实测) 作一次近似校准；壁面剪应力会随重新求解变化，必须重新生成网格并求解后复测。' });
+    } else if (designMode !== 'forward') throw new Error('不支持的计算模式。');
+    if (!Number.isFinite(w) || w <= 0) throw new Error('首层厚度无效。');
+    const T = w * geomSum(n, r);
+    if (!Number.isFinite(T) || T <= 0) throw new Error('总厚度溢出或无效。');
+    const layers = [], k = flow.rho * flow.utau / flow.mu;
+    let cum = 0, term = w;
+    for (let i = 1; i <= n; i++) {
+      const yCenter = cum + term / 2;
+      cum += term;
+      layers.push({ i, thickness: term, cumulative: cum, estimatedCenterYplus: yCenter * k, estimatedOuterYplus: cum * k });
+      term *= r;
+    }
+    const last = layers[n - 1].thickness;
+    const predY = k * w / 2;
+    if (designMode === 'calibrate') {
+      warnings.push({ level: 'info', text: '校准后按经验摩擦模型回算的 y+ 与实测比例校准预测值可能不同，因为两者采用的摩擦速度来源不同。' });
+    }
+    if (r > 1.5) warnings.push({ level: 'warning', text: '层间增长率超过 1.5，可能造成较强的网格尺寸跳变。' });
+    else if (r > 1.3) warnings.push({ level: 'info', text: '层间增长率超过常用的 1.1–1.3，建议检查质量。' });
+    if (n < 5) warnings.push({ level: 'warning', text: '层数较少，可能无法充分解析壁面梯度；结合湍流模型与网格无关性检查。' });
+    if (yp > 5 && yp < 30) warnings.push({ level: 'warning', text: '目标 y+ 处于常见壁面处理的敏感区间；是否允许取决于所选 wall treatment。' });
+    if (yp >= 30) warnings.push({ level: 'info', text: '较高 y+ 设计通常需要与所用壁面函数及模型相匹配，不能单凭 y+ 判断精度。' });
+    if (flow.delta !== null) {
+      const ratio = T / flow.delta;
+      if (ratio < 0.1) warnings.push({ level: 'warning', text: '棱柱层总厚度不足平板估算 δ99 的 10%；并非绝对失败，但须确认核心网格也能解析外层梯度。' });
+      if (ratio > 2) warnings.push({ level: 'info', text: '棱柱层总厚度超过平板估算 δ99 的两倍，建议审查网格量与质量。' });
+    } else if (T >= flow.length / 2) warnings.push({ level: 'danger', text: '管道 T≥D/2，存在两侧棱柱层干涉风险。' });
+    else if (T > flow.length / 4) warnings.push({ level: 'warning', text: '管道棱柱层已占半径的 50% 以上，请检查核心区域和塌陷层。' });
+    const coreCellMm = finiteNonnegative(inp.coreCellMm ?? 0, '核心网格参考尺寸');
+    const coreRatio = coreCellMm ? last / (coreCellMm / 1000) : null;
+    if (coreRatio !== null && (coreRatio < 0.2 || coreRatio > 2)) warnings.push({ level: 'warning', text: '末层厚度与核心单元参考尺寸相差较大，建议检查棱柱层与核心网格衔接。' });
+    if (targetT !== null && designMode === 'inverseN' && T > targetT * 1.1)
+      warnings.push({ level: 'info', text: '层数取整后总厚度超过目标 10%；可适当调整增长率或目标厚度。' });
+    const cfBounds = flow.cfLam && flow.cfTurb ? {
+      laminarW: 2 * yp * flow.mu / (flow.rho * flow.U * Math.sqrt(flow.cfLam / 2)),
+      turbulentW: 2 * yp * flow.mu / (flow.rho * flow.U * Math.sqrt(flow.cfTurb / 2))
+    } : null;
+    return { input: inp, flow, N: n, r, w, T, targetT, yp, predictedYplus: predY,
+      last, coreRatio, layers, warnings, calibration, cfBounds, mode: designMode };
+  }
+  return { PRESETS, DEFAULTS, geomSum, solveN, solveR, fluidModel, compute };
+});
+
+</script><script>
+/* Browser UI for Prism Layer Studio */
+(() => {
+  'use strict';
+  const core = window.PrismCore;
+  const $ = id => document.getElementById(id);
+  let mode = 'forward', latest = null, toastTimer;
+  const ids = ['rho','viscosity','viscosityMode','geometry','length','U','xFraction','surface','flow','manualCf',
+    'targetYplus','N','r','targetTmm','measuredYplus','previousWum','coreCellMm'];
+  function number(id) { const v = $(id).value; return v === '' ? NaN : Number(v); }
+  function values() { return {
+    rho:number('rho'),viscosity:number('viscosity'),viscosityMode:$('viscosityMode').value,
+    geometry:$('geometry').value,length:number('length'),U:number('U'),
+    xFraction:number('xFraction'),surface:$('surface').value,flow:$('flow').value,
+    manualCf:number('manualCf'),targetYplus:number('targetYplus'),N:number('N'),r:number('r'),
+    targetTmm:number('targetTmm'),measuredYplus:number('measuredYplus'),
+    previousWum:number('previousWum'),coreCellMm:number('coreCellMm'),designMode:mode
+  };}
+  function scientific(n, digits=9) { return Number(n).toExponential(digits); }
+  function format(n, digits=6) {
+    if (n === null || !Number.isFinite(n)) return '—';
+    if (n === 0) return '0';
+    const x = Math.abs(n);
+    return x >= 1e5 || x < 1e-3 ? n.toExponential(Math.min(5,digits-1)) : Number(n.toPrecision(digits)).toLocaleString('zh-CN',{maximumFractionDigits:9});
+  }
+  function lengthHuman(m) {
+    if (!Number.isFinite(m)) return '—';
+    if (Math.abs(m)>=1) return format(m)+' m';
+    if (Math.abs(m)>=1e-3) return format(m*1e3)+' mm';
+    if (Math.abs(m)>=1e-6) return format(m*1e6)+' μm';
+    return format(m*1e9)+' nm';
+  }
+  function text(id,s) { $(id).textContent = String(s); }
+  function notify(s) { text('toast',s);$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2600); }
+  function modeUpdate() {
+    document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+    $('nRow').hidden = mode==='inverseN';
+    $('rRow').hidden = mode==='inverseR';
+    $('targetTRow').hidden = !(mode==='inverseN'||mode==='inverseR');
+    $('calibrationFields').hidden = mode!=='calibrate';
+    text('modeDescription',({forward:'目标 y+、层数 N、增长率 r → 预测首层厚度与总厚度。',
+      inverseN:'已知目标 y+、目标总厚度和增长率 → 自动求满足总厚度的最少整数层数。',
+      inverseR:'已知目标 y+、目标总厚度和层数 → 数值反求增长率 r。',
+      calibrate:'已知旧首层厚度与 STAR-CCM+ 实测 Wall Y+，按比例给出一次修正建议。'})[mode]);
+  }
+  function geometryUpdate() {
+    const geom = $('geometry').value;
+    $('outerFields').hidden = geom==='pipe';
+    $('sideRow').hidden = geom!=='wing';
+    $('lengthLabel').innerHTML = geom==='pipe'?'圆管内径 D <small>m</small>':
+      geom==='wing'?'翼型弦长 c <small>m</small>':'平板总长 L <small>m</small>';
+  }
+  function presetChange() {
+    if ($('preset').value==='custom')return;
+    const p=core.PRESETS[$('preset').value];
+    if(!p)return;
+    $('rho').value=p.rho;$('viscosityMode').value='dynamic';lastViscosityType='dynamic';$('viscosity').value=p.mu;
+    text('viscosityLabel','动力粘度 μ (Pa·s)'); calculate();
+  }
+  function viscositySwitch(previousType) {
+    const now=$('viscosityMode').value, rho=number('rho');
+    const old=number('viscosity');
+    if(Number.isFinite(old)&&Number.isFinite(rho)&&rho>0 && previousType!==now){
+      $('viscosity').value=now==='kinematic'?String(old/rho):String(old*rho);
+    }
+    $('viscosityLabel').innerHTML=now==='kinematic'?'运动粘度 ν <small>m²/s</small>':'动力粘度 μ <small>Pa·s</small>';
+    calculate();
+  }
+  function chart(result) {
+    const a=result.layers, n=a.length, W=760,H=240,left=76,right=16,top=16,bottom=37;
+    const width=W-left-right, height=H-top-bottom;
+    const min=Math.min(a[0].thickness,result.T)*0.75, max=result.T*1.3;
+    const lo=Math.log10(min),hi=Math.log10(max);
+    const y=v=>top+height*(hi-Math.log10(Math.max(v,min)))/(hi-lo);
+    const x=i=>left+(i+.5)*width/n;
+    const bw=Math.max(1,width/n*.69);
+    let s='<defs><linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ce9d9"/><stop offset="1" stop-color="#568bed"/></linearGradient></defs>';
+    for(let t=0;t<5;t++){
+      const val=Math.pow(10,lo+(hi-lo)*t/4),yy=y(val);
+      s+=`<line class="gridline" x1="${left}" y1="${yy.toFixed(1)}" x2="${W-right}" y2="${yy.toFixed(1)}"/>`;
+      s+=`<text class="axislabel" x="${left-8}" y="${(yy+4).toFixed(1)}" text-anchor="end">${format(val*1000,3)} mm</text>`;
+    }
+    let pts='';
+    a.forEach((z,i)=>{
+      const xx=x(i),yy=y(z.thickness),ybase=y(min);
+      s+=`<rect class="bar" x="${(xx-bw/2).toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,ybase-yy).toFixed(1)}"/>`;
+      pts+=`${xx.toFixed(1)},${y(z.cumulative).toFixed(1)} `;
+    });
+    s+=`<polyline class="cumline" points="${pts}"/>`;
+    const endpoint=a[a.length-1];
+    s+=`<circle class="cum-end" cx="${x(n-1).toFixed(1)}" cy="${y(endpoint.cumulative).toFixed(1)}" r="4"/>`;
+    s+=`<text class="axislabel" x="${left}" y="${H-12}">第 1 层</text>`;
+    s+=`<text class="axislabel" x="${W-right}" y="${H-12}" text-anchor="end">第 ${n} 层</text>`;
+    $('chart').innerHTML=s;
+  }
+  function render(result) {
+    latest=result;window.PrismLayerLatest={N:result.N,r:result.r,w:result.w,T:result.T,yp:result.yp,layers:result.layers}; const f=result.flow;
+    text('outW',lengthHuman(result.w));text('outWm',scientific(result.w,9)+' m');
+    text('outT',lengthHuman(result.T));text('outTm',scientific(result.T,9)+' m');
+    text('outN',result.N);text('outR',format(result.r,9));
+    text('outRe',format(f.Re,5));text('outCf',format(f.Cf,6));
+    text('outUtau',format(f.utau,6)+' m/s');
+    text('outYp',format(result.predictedYplus,5)+'（预测）');
+    text('outDelta',f.delta===null?'不适用':lengthHuman(f.delta));
+    text('outLast',lengthHuman(result.last));
+    text('outRatio',f.delta===null?'不适用':format(result.T/f.delta,5));
+    text('outCoreRatio',result.coreRatio===null?'未提供':format(result.coreRatio,5));
+    text('correlation','关联式：'+f.correlation+'；局部参考位置 x='+format(f.x,5)+' m，摩擦剪应力='+format(f.tau,5)+' Pa。');
+    const extras=[];
+    if(result.targetT!==null) extras.push('目标 T='+lengthHuman(result.targetT)+'，计算得到 T='+lengthHuman(result.T));
+    if(result.calibration) extras.push('按实测比例校准：w旧='+lengthHuman(result.calibration.oldW)+'，比例因子='+format(result.calibration.scale,6)+'，w新='+lengthHuman(result.w)+'。这不是重新求解后的实际 y+。');
+    if(result.cfBounds && result.input.flow==='transition' && !result.input.manualCf && f.geometry!=='pipe')
+      extras.push('层流 / 全湍流局部首层厚度参考范围：'+lengthHuman(result.cfBounds.turbulentW)+' – '+lengthHuman(result.cfBounds.laminarW)+'（两种模型端点，不代表可信的转捩预测区间）。');
+    text('extraInfo',extras.join(' · '));
+    const box=$('warnings'); box.replaceChildren();
+    for(const item of result.warnings){
+      const d=document.createElement('div'); d.className='warning '+(item.level==='danger'?'danger':item.level==='info'?'info':'');
+      d.textContent=(item.level==='danger'?'✖ ':item.level==='warning'?'⚠ ':'ℹ ')+item.text;
+      box.appendChild(d);
+    }
+    chart(result);
+    const table=$('layerTable'); table.replaceChildren();
+    for(const z of result.layers.slice(0,100)){
+      const tr=document.createElement('tr');
+      for(const value of [z.i,(z.thickness*1000).toExponential(6),(z.cumulative*1000).toExponential(6),format(z.estimatedCenterYplus,5)]){
+        const td=document.createElement('td'); td.textContent=String(value);tr.appendChild(td);
+      }
+      table.appendChild(tr);
+    }
+    text('standardSummary',`Number of Prism Layers = ${result.N}\nPrism Layer Stretching = ${format(result.r,10)}\nPrism Layer Total Thickness (Absolute) = ${scientific(result.T,9)} m\n首层厚度（由上述参数推得）≈ ${scientific(result.w,9)} m`);
+    text('advancedSummary',`Stretching Function = Geometric Progression\nDistribution Mode = Wall Thickness\n目标 Near Wall Thickness = ${scientific(result.w,9)} m\nNumber of Layers = ${result.N}\n推导总厚度 T ≈ ${scientific(result.T,9)} m\n推导增长率 r ≈ ${format(result.r,10)}\n※ 实际可编辑字段请按本机版本的当前模式核对`);
+    document.dispatchEvent(new CustomEvent('prism:result',{detail:{N:result.N,r:result.r,w:result.w,T:result.T,yp:result.yp,layers:result.layers}}));
+  }
+  function calculate() {
+    try {
+      render(core.compute(values()));$('error').hidden=true;
+    } catch(err){
+      latest=null;window.PrismLayerLatest=null;document.dispatchEvent(new CustomEvent('prism:error'));$('error').hidden=false;text('error',err.message || String(err));
+      ['outW','outT','outN','outR','outRe','outCf','outUtau','outYp','outDelta','outLast','outRatio','outCoreRatio'].forEach(id=>text(id,'—'));
+      ['outWm','outTm','correlation','extraInfo','standardSummary','advancedSummary'].forEach(id=>text(id,''));
+      $('warnings').replaceChildren();$('chart').replaceChildren();$('layerTable').replaceChildren();
+    }
+  }
+  async function copySummary(){
+    if(!latest){notify('请先输入有效参数');return;}
+    const r=latest,f=r.flow;
+    const msg=`【Prism Layer Studio v2.3】\n模型：${f.correlation}\nRe=${format(f.Re,8)}, Cf=${format(f.Cf,8)}, uτ=${scientific(f.utau)} m/s\n目标 y+=${r.yp}；预测首层 y+=${format(r.predictedYplus,8)}\nN=${r.N}, r=${format(r.r,10)}\nw=${scientific(r.w,9)} m\nT=${scientific(r.T,9)} m\n末层=${scientific(r.last,9)} m\n\n标准 Prism Layer Mesher: Number of Layers / Stretching / Total Thickness\nAdvancing Layer Mesher: Geometric Progression + Wall Thickness 分布模式\n注意：预测 y+ 不代表 CFD 实测；请检查局部 Wall Y+ 和实际网格质量。`;
+    try{await navigator.clipboard.writeText(msg); notify('设置摘要已复制');}
+    catch(_){const ta=document.createElement('textarea');ta.value=msg;document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();notify(ok?'设置摘要已复制':'复制失败，请使用导出功能');}
+  }
+  function download(name,contents,mime){
+    const u=URL.createObjectURL(new Blob([contents],{type:mime}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
+    notify(name+' 已导出');
+  }
+  function exportCsv(){
+    if(!latest)return notify('无可导出的结果');
+    let csv='\ufeff层号,单层厚度(m),累计厚度(m),预测质心y+,预测层外缘y+\n';
+    for(const z of latest.layers)csv+=[z.i,scientific(z.thickness),scientific(z.cumulative),format(z.estimatedCenterYplus,9),format(z.estimatedOuterYplus,9)].join(',')+'\n';
+    download('prism-layer-studio-layers.csv',csv,'text/csv;charset=utf-8');
+  }
+  function exportJson(){
+    if(!latest)return notify('无可导出的结果');
+    download('prism-layer-studio-result.json',JSON.stringify({version:'2.2',generatedAt:new Date().toISOString(),result:latest},null,2),'application/json;charset=utf-8');
+  }
+  /* Fluid material library: custom accessible dropdown backed by the original select. */
+  function initFluidPicker() {
+    const root=$('fluidSelect'), picker=$('fluidPicker'), native=$('preset');
+    const trigger=$('fluidTrigger'), menu=$('fluidMenu');
+    if (!root || !picker || !trigger || !menu) return () => {};
+    const dictionary={
+      custom:{title:'自定义',sub:'手动设置物性',icon:'＋',kind:'custom'},
+      air25:{title:'空气',temp:'25°C',sub:'常压参考',icon:'气',kind:'gas'},
+      air15:{title:'空气',temp:'15°C',sub:'常压参考',icon:'气',kind:'gas'},
+      water20:{title:'水',temp:'20°C',sub:'液态',icon:'水',kind:'liquid'},
+      nitrogen25:{title:'氮气',temp:'25°C',sub:'常压近似',icon:'氮',kind:'gas'},
+      co225:{title:'二氧化碳',temp:'25°C',sub:'常压近似',icon:'碳',kind:'gas'}
+    };
+    const options=[];
+    function element(tag,cls,txt){const el=document.createElement(tag);if(cls)el.className=cls;if(txt!==undefined)el.textContent=txt;return el;}
+    const head=element('div','fluid-menu-top');head.append(element('strong','', '物性参数库'),element('span','', '05 MATERIALS'));menu.append(head);
+    function group(title, keys) {
+      const label=element('div','fluid-group-label',title); label.setAttribute('role','presentation');menu.append(label);
+      for(const key of keys){
+        const info=dictionary[key], p=core.PRESETS[key];
+        const option=element('button','fluid-option');option.type='button';option.dataset.fluidPreset=key;
+        option.id='fluid-option-'+key;option.setAttribute('role','option');option.setAttribute('aria-selected','false');option.tabIndex=-1;
+        const icon=element('span','fluid-option-icon',info.icon);icon.dataset.kind=info.kind;icon.setAttribute('aria-hidden','true');
+        const body=element('span','fluid-option-body');const titleRow=element('span','fluid-option-title',info.title);
+        if(info.temp)titleRow.append(element('span','fluid-option-temp',info.temp));
+        const meta= key==='custom'?'使用下方输入的密度与粘度':`ρ ${p.rho} kg/m³ · μ ${Number(p.mu).toExponential(2)} Pa·s`;
+        body.append(titleRow,element('span','fluid-option-meta',meta));
+        const check=element('span','fluid-option-check','✓');check.setAttribute('aria-hidden','true');
+        option.append(icon,body,check);
+        option.setAttribute('aria-label',key==='custom'?'自定义物性参数':`${info.title} ${info.temp}，密度 ${p.rho} 千克每立方米`);
+        option.addEventListener('click',()=>choose(key));
+        menu.append(option);options.push(option);
+      }
+    }
+    group('自定义设置',['custom']);group('气体 / GAS',['air25','air15','nitrogen25','co225']);group('液体 / LIQUID',['water20']);
+    menu.append(element('div','fluid-menu-footer','物性为参考值；请按实际温度与压力校核。'));
+    function sync(){
+      const value=native.value, info=dictionary[value]||dictionary.custom;
+      text('fluidCurrentName',info.title+(info.temp?' '+info.temp:''));
+      text('fluidCurrentMeta',value==='custom'?'手动编辑 · ρ / μ':`ρ ${core.PRESETS[value].rho} kg/m³`);
+      $('fluidCurrentIcon').textContent=info.icon;
+      $('fluidCurrentIcon').dataset.kind=info.kind;
+      options.forEach(item=>item.setAttribute('aria-selected',String(item.dataset.fluidPreset===value)));
+    }
+    function close(focusTrigger){
+      if(menu.hidden)return;
+      menu.hidden=true;root.classList.remove('is-open');trigger.setAttribute('aria-expanded','false');
+      if(focusTrigger)trigger.focus({preventScroll:true});
+    }
+    function show(focusItem){
+      if(!menu.hidden)return;
+      const box=trigger.getBoundingClientRect();
+      menu.classList.toggle('opens-up',(window.innerHeight-box.bottom)<280 && box.top>290);
+      menu.hidden=false;root.classList.add('is-open');trigger.setAttribute('aria-expanded','true');
+      if(focusItem){const sel=options.find(opt=>opt.dataset.fluidPreset===native.value)||options[0];sel.focus({preventScroll:true});}
+    }
+    function choose(value){
+      if(native.value!==value){native.value=value;native.dispatchEvent(new Event('change',{bubbles:true}));}
+      sync();close(true);
+    }
+    function move(next){
+      const active=options.indexOf(document.activeElement);
+      const selected=options.findIndex(opt=>opt.dataset.fluidPreset===native.value);
+      const index=active<0?selected:active;
+      options[(index+next+options.length)%options.length].focus({preventScroll:true});
+    }
+    trigger.addEventListener('click',()=>menu.hidden?show(true):close(true));
+    trigger.addEventListener('keydown',evt=>{
+      if(evt.key==='ArrowDown'||evt.key==='ArrowUp'){
+        evt.preventDefault();if(menu.hidden)show(true);else move(evt.key==='ArrowDown'?1:-1);
+      }else if(evt.key==='Escape'){close(true);}
+    });
+    menu.addEventListener('keydown',evt=>{
+      if(evt.key==='ArrowDown'||evt.key==='ArrowUp'){
+        evt.preventDefault();move(evt.key==='ArrowDown'?1:-1);
+      }else if(evt.key==='Home'||evt.key==='End'){
+        evt.preventDefault();options[evt.key==='Home'?0:options.length-1].focus({preventScroll:true});
+      }else if(evt.key==='Escape'){
+        evt.preventDefault();close(true);
+      }else if(evt.key==='Tab')close(false);
+    });
+    document.addEventListener('pointerdown',evt=>{if(!root.contains(evt.target))close(false);});
+    window.addEventListener('resize',()=>close(false));
+    native.addEventListener('change',sync);
+    picker.hidden=false;root.classList.add('enhanced');$('presetLabel').htmlFor='fluidTrigger';sync();
+    return sync;
+  }
+  const syncFluidPicker=initFluidPicker();
+  let lastViscosityType=$('viscosityMode').value;
+  $('viscosityMode').addEventListener('change',()=>{const prior=lastViscosityType;lastViscosityType=$('viscosityMode').value;viscositySwitch(prior);});
+  $('preset').addEventListener('change',presetChange);
+  $('geometry').addEventListener('change',()=>{geometryUpdate();calculate();});
+  for(const id of ids.filter(id=>!['viscosityMode','geometry'].includes(id))) {
+    $(id).addEventListener('input',()=>{if(id==='rho'||id==='viscosity'){$('preset').value='custom';syncFluidPicker();}calculate();});
+    $(id).addEventListener('change',calculate);
+  }
+  document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{mode=button.dataset.mode;modeUpdate();calculate();}));
+  $('calcButton').addEventListener('click',()=>{calculate();if(latest)notify('计算已更新');});
+  $('resetButton').addEventListener('click',()=>{for(const [k,v] of Object.entries(core.DEFAULTS)){if($(k))$(k).value=v;}
+    $('preset').value='air25';syncFluidPicker();mode='forward';lastViscosityType='dynamic';modeUpdate();geometryUpdate();text('viscosityLabel','动力粘度 μ (Pa·s)');calculate();notify('已恢复默认示例');});
+  $('copyButton').addEventListener('click',copySummary);$('csvButton').addEventListener('click',exportCsv);$('jsonButton').addEventListener('click',exportJson);
+  modeUpdate();geometryUpdate();calculate();
+})();
+
+</script><script>
+/* Prism Layer Studio v2.2 — reactive SVG prism mesh, self contained and offline.
+   Artistic preview: geometry is normalized for visibility, NOT a simulation or mesh-quality guarantee. */
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const root = $('heroInteractive'), scene = $('heroScene'), base = $('heroMeshBase');
+  const reveal = $('heroMeshReveal'), revealCircle = $('heroReveal'), probe = $('heroProbe');
+  const tilt = $('sceneTilt'), coords = $('sceneCoordinates');
+  const ns = 'http://www.w3.org/2000/svg';
+  if (!root || !scene || !base || !reveal || !revealCircle || !probe) return;
+
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let paused = !!reduced, visible = true;
+  let targetX = .5, targetY = .5, currentX = .5, currentY = .5;
+  let activeIndex = -1, hovering = false, frame = 0;
+  let result = {N:10,r:1.2,w:0.00007,T:0.0018,layers:[]};
+  let edges = [], paths = [], displayCount = 0;
+
+  const clamp = (x,a,b) => Math.min(b,Math.max(a,x));
+  const fmt = (x) => Number.isFinite(x) ? x.toPrecision(4) : '—';
+  function make(tag,attrs={},parent) {
+    const e = document.createElementNS(ns,tag);
+    for (const [name,value] of Object.entries(attrs)) e.setAttribute(name,String(value));
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function wallY(x){ const t=(x-58)/506; return 291-49*Math.sin(Math.PI*clamp(t,0,1))+4*Math.sin(3.5*Math.PI*t); }
+  const mod = x => 1+.055*Math.sin((x-58)/506*Math.PI*2.2);
+  function pathLine(offset){
+    let s='';for(let j=0;j<=64;j++){const x=58+j*506/64;const y=wallY(x)-offset*mod(x);s+=(j?' L':'M')+x.toFixed(2)+' '+y.toFixed(2);}return s;
+  }
+  function pathBand(low,high){
+    let s=pathLine(high);
+    for(let j=64;j>=0;j--){const x=58+j*506/64;const y=wallY(x)-low*mod(x);s+=' L'+x.toFixed(2)+' '+y.toFixed(2);}
+    return s+' Z';
+  }
+  function clear(group){group.replaceChildren();}
+  function edgesAtResult() {
+    const total=Math.max(1, Math.round(result.N));
+    displayCount = Math.min(16,total);
+    let cum=[0];
+    // Group real layers into at most 16 visual bands; preserve cumulative thickness.
+    if (result.layers && result.layers.length===total && Number.isFinite(result.T) && result.T>0) {
+      for(let j=1;j<=displayCount;j++){
+        const i=Math.max(1,Math.ceil(j*total/displayCount));
+        const t=result.layers[i-1].cumulative / result.T;
+        cum.push(clamp(t,0,1));
+      }
+    } else {
+      let sum=0;const weights=[];
+      for(let j=0;j<displayCount;j++){const t=j/Math.max(1,displayCount-1);const h=Math.pow(clamp(result.r,1,2),t*9);weights.push(h);sum+=h;}
+      for(const h of weights) cum.push(cum[cum.length-1]+h/sum);
+    }
+    edges=cum.map(v=>144*v);
+  }
+  function build() {
+    clear(base);clear(reveal);clear(probe);paths=[];
+    edgesAtResult();
+    const total=displayCount;
+    // Engineering datum line and faint extrusion cues.
+    make('path',{d:pathLine(0),class:'hero-wall'},base);
+    make('path',{d:pathLine(0),class:'hero-wall'},reveal);
+    for(let i=0;i<total;i++){
+      const d=pathBand(edges[i],edges[i+1]);paths.push(d);
+      make('path',{d,class:'hero-base-layer','data-band':i},base);
+      make('path',{d,class:'hero-reveal-layer','data-band':i},reveal);
+    }
+    for(let i=0;i<=total;i++){
+      make('path',{d:pathLine(edges[i]),class:'hero-base-line'},base);
+      make('path',{d:pathLine(edges[i]),class:'hero-reveal-line'},reveal);
+    }
+    for(let j=0;j<=12;j++){
+      const x=58+506*j/12;
+      const d=`M${x.toFixed(1)},${wallY(x).toFixed(1)} L${x.toFixed(1)},${(wallY(x)-edges[total]*mod(x)).toFixed(1)}`;
+      make('path',{d,class:'hero-base-line'},base);
+      make('path',{d,class:'hero-reveal-line'},reveal);
+    }
+    // Gradient edge of physical surface remains visible even outside cursor reveal.
+    make('path',{d:pathLine(0),class:'hero-wall'},base);
+    selectIndex(activeIndex>=0?Math.min(activeIndex,total-1):-1,false);
+  }
+  function layerAt(x,y) {
+    const xx=58+clamp(x,0,1)*506;
+    const sy=wallY(xx)-clamp(y,0,1)*400;
+    let best=0,dist=Infinity;
+    for(let i=0;i<displayCount;i++){
+      const mid=(edges[i]+edges[i+1])/2*mod(xx);
+      const d=Math.abs(sy-mid);
+      if(d<dist){best=i;dist=d;}
+    }
+    return best;
+  }
+  function actualIndex(index) {
+    return Math.max(1,Math.ceil((index+1)*result.N/displayCount));
+  }
+  function selectIndex(index,announce=true) {
+    activeIndex=index;
+    for(const g of [base,reveal]) for(const p of g.querySelectorAll('[data-band]')){
+      p.classList.toggle('hero-selected-layer',Number(p.getAttribute('data-band'))===index);
+    }
+    if(index<0) return;
+    const j=actualIndex(index),item=result.layers && result.layers[j-1];
+    const w=item && Number.isFinite(item.thickness)?item.thickness:result.w*Math.pow(result.r,j-1);
+    $('heroInspectionLabel').textContent='PRISM LAYER / LOCAL PROBE';
+    $('heroInspectionValue').textContent=`第 ${j} 层 · 单层厚度 ${fmt(w*1e6)} μm（预测）`;
+    $('heroInspectionIndex').textContent=String(j).padStart(2,'0')+' / '+result.N;
+    $('heroFormula').textContent=`h${j} = w · r^${j-1}`;
+    if(announce) root.setAttribute('aria-description',`当前选中第 ${j} 层，厚度约 ${fmt(w*1e6)} 微米。`);
+  }
+  function showProbe(x,y,index){
+    clear(probe);
+    const xx=58+clamp(x,0,1)*506;
+    const c=(edges[index]+edges[index+1])/2;
+    const yy=wallY(xx)-c*mod(xx);
+    make('line',{x1:xx-15,y1:yy,x2:xx+15,y2:yy},probe);
+    make('line',{x1:xx,y1:yy-15,x2:xx,y2:yy+15},probe);
+    make('circle',{cx:xx,cy:yy,r:4},probe);
+    make('text',{x:xx+16,y:yy-13,class:'probe-text'},probe).textContent='LAYER '+String(actualIndex(index)).padStart(2,'0');
+  }
+  function getPointer(e){const r=scene.getBoundingClientRect();return {x:clamp((e.clientX-r.left)/r.width,0,1),y:clamp((e.clientY-r.top)/r.height,0,1),px:e.clientX-r.left,py:e.clientY-r.top};}
+  function pointMove(e){const p=getPointer(e);hovering=true;targetX=p.x;targetY=p.y;coords.textContent=`X ${p.x.toFixed(3)}  /  Y ${p.y.toFixed(3)}`;if(paused) updateVisual(true);else if(!frame)updateVisual(false);}
+  function addRipple(px,py){
+    if(paused)return;
+    const el=document.createElement('span');el.className='scene-ripple';el.style.left=px+'px';el.style.top=py+'px';$('sceneRipples').appendChild(el);el.addEventListener('animationend',()=>el.remove(),{once:true});
+  }
+  function pointClick(e){
+    const p=getPointer(e);targetX=p.x;targetY=p.y;
+    const chosen=layerAt(p.x,p.y);
+    selectIndex(chosen);showProbe(p.x,p.y,chosen);addRipple(p.px,p.py);
+    if(paused)updateVisual(true);
+  }
+  function updateVisual(immediate=false){
+    if(!visible)return;
+    const alpha=immediate||paused?1:.095;
+    currentX+=(targetX-currentX)*alpha;currentY+=(targetY-currentY)*alpha;
+    const a=(currentX-.5), b=(currentY-.5);
+    // Camera-like lag, but limited tilt to avoid discomfort.
+    tilt.style.transform=paused?'none':`perspective(1000px) rotateY(${(a*9).toFixed(2)}deg) rotateX(${(-b*7).toFixed(2)}deg) scale(1.025)`;
+    revealCircle.setAttribute('cx',(currentX*620).toFixed(1));
+    revealCircle.setAttribute('cy',(currentY*400).toFixed(1));
+    scene.style.setProperty('--glow-x',(currentX*100).toFixed(2)+'%');
+    scene.style.setProperty('--glow-y',(currentY*100).toFixed(2)+'%');
+    if(!paused && (Math.abs(currentX-targetX)+Math.abs(currentY-targetY) > .001)) frame=requestAnimationFrame(()=>updateVisual(false));
+    else frame=0;
+  }
+  function setMotion(pausedNow){
+    paused=pausedNow;
+    document.documentElement.classList.toggle('motion-ready',!paused);
+    $('heroMotionToggle').setAttribute('aria-pressed',paused?'true':'false');
+    $('heroMotionToggle').textContent=paused?'启用动效':'暂停动效';
+    if(paused){cancelAnimationFrame(frame);frame=0;updateVisual(true);}
+    else if(visible){cancelAnimationFrame(frame);frame=0;updateVisual(false);}
+  }
+  scene.addEventListener('pointermove',pointMove,{passive:true});
+  scene.addEventListener('pointerenter',()=>{hovering=true;});
+  scene.addEventListener('pointerleave',()=>{hovering=false;targetX=.5;targetY=.5;coords.textContent='X 0.500  /  Y 0.500';if(paused)updateVisual(true);else if(!frame)updateVisual(false);});
+  scene.addEventListener('click',pointClick);
+  root.addEventListener('keydown',e=>{
+    if(!['ArrowLeft','ArrowRight','Enter',' '].includes(e.key))return;
+    if(e.target!==root)return;
+    e.preventDefault();const next=e.key==='ArrowLeft'?((activeIndex-1+displayCount)%displayCount):((activeIndex+1)%displayCount);
+    selectIndex(next);showProbe(.5,.5,next);
+  });
+  $('heroMotionToggle').addEventListener('click',()=>setMotion(!paused));
+  $('heroExplore').addEventListener('click',()=>$('inputsSection').scrollIntoView({behavior:paused?'auto':'smooth',block:'start'}));
+  if('IntersectionObserver'in window){
+    new IntersectionObserver(es=>{
+      visible=es.some(e=>e.isIntersecting);
+      if(!visible){cancelAnimationFrame(frame);frame=0;}
+      else {updateVisual(true);if(!paused)updateVisual(false);}
+    },{threshold:.01}).observe(root);
+  }
+  // Entrance motion is observational and does not change calculation or layout dimensions.
+  if('IntersectionObserver' in window && !reduced){
+    const elements=[...document.querySelectorAll('main .notice, main .panel')];
+    elements.forEach(el=>el.classList.add('reveal-on-scroll'));
+    const io=new IntersectionObserver(entries=>{
+      for(const e of entries) if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target);}
+    },{threshold:.07,rootMargin:'0px 0px -24px 0px'});
+    elements.forEach(el=>io.observe(el));
+  }
+  document.addEventListener('prism:result',e=>{
+    result=e.detail;root.classList.remove('hero-invalid');build();
+  });
+  document.addEventListener('prism:error',()=>{
+    root.classList.add('hero-invalid');
+    $('heroInspectionLabel').textContent='INVALID DESIGN INPUT';
+    $('heroInspectionValue').textContent='请修正参数后重新计算';
+    $('heroInspectionIndex').textContent='— / —';
+  });
+  // app.js dispatches the initial result before this script loads. Read its latest computed model.
+  if(window.PrismLayerLatest) result=window.PrismLayerLatest;
+  const n=Number($('N').value),r=Number($('r').value);
+  if(!window.PrismLayerLatest && Number.isFinite(n)&&n>0)result.N=n;
+  if(!window.PrismLayerLatest && Number.isFinite(r)&&r>=1)result.r=r;
+  build();setMotion(paused);
+})();
+
+</script>
+</body></html>

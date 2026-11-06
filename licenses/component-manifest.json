@@ -1,0 +1,172 @@
+{
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "components": [
+    {
+      "name": "altgraph",
+      "version": "0.17.5",
+      "declared_license": "MIT",
+      "files": [
+        "python-packages/altgraph-0.17.5/altgraph-0.17.5.dist-info/LICENSE"
+      ]
+    },
+    {
+      "name": "bottle",
+      "version": "0.13.4",
+      "declared_license": "MIT",
+      "files": [
+        "python-packages/bottle-0.13.4/bottle-0.13.4.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "declared_license": "MIT-0",
+      "files": [
+        "python-packages/cffi-2.1.1/cffi-2.1.1.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "clr_loader",
+      "version": "0.3.1",
+      "declared_license": "see original notices",
+      "files": [
+        "python-packages/clr_loader-0.3.1/clr_loader-0.3.1.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "declared_license": "Apache-2.0 OR BSD-2-Clause",
+      "files": [
+        "python-packages/packaging-26.3/packaging-26.3.dist-info/licenses/LICENSE",
+        "python-packages/packaging-26.3/packaging-26.3.dist-info/licenses/LICENSE.APACHE",
+        "python-packages/packaging-26.3/packaging-26.3.dist-info/licenses/LICENSE.BSD"
+      ]
+    },
+    {
+      "name": "pefile",
+      "version": "2024.8.26",
+      "declared_license": "MIT",
+      "files": [
+        "python-packages/pefile-2024.8.26/pefile-2024.8.26.dist-info/LICENSE"
+      ]
+    },
+    {
+      "name": "pip",
+      "version": "25.2",
+      "declared_license": "MIT",
+      "files": [
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/LICENSE.txt",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/cachecontrol/LICENSE.txt",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/certifi/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/dependency_groups/LICENSE.txt",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/distlib/LICENSE.txt",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/distro/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/idna/LICENSE.md",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/msgpack/COPYING",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE.APACHE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/packaging/LICENSE.BSD",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/pkg_resources/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/platformdirs/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/pygments/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/pyproject_hooks/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/requests/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/resolvelib/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/rich/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/tomli/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/tomli/LICENSE-HEADER",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/tomli_w/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/truststore/LICENSE",
+        "python-packages/pip-25.2/pip-25.2.dist-info/licenses/src/pip/_vendor/urllib3/LICENSE.txt"
+      ]
+    },
+    {
+      "name": "proxy_tools",
+      "version": "0.1.0",
+      "declared_license": "MIT",
+      "files": []
+    },
+    {
+      "name": "pycparser",
+      "version": "3.12",
+      "declared_license": "BSD-3-Clause",
+      "files": [
+        "python-packages/pycparser-3.12/pycparser-3.12.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pyinstaller",
+      "version": "6.22.3",
+      "declared_license": "GPLv2-or-later with a special exception which allows to use PyInstaller to build and distribute non-free programs (including commercial ones)",
+      "files": [
+        "python-packages/pyinstaller-6.22.3/pyinstaller-6.22.3.dist-info/licenses/COPYING.txt"
+      ]
+    },
+    {
+      "name": "pyinstaller-hooks-contrib",
+      "version": "2026.9",
+      "declared_license": "see original notices",
+      "files": [
+        "python-packages/pyinstaller-hooks-contrib-2026.9/pyinstaller_hooks_contrib-2026.9.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pythonnet",
+      "version": "3.2.1",
+      "declared_license": "MIT",
+      "files": [
+        "python-packages/pythonnet-3.2.1/pythonnet-3.2.1.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pywebview",
+      "version": "6.2.1",
+      "declared_license": "BSD 3-Clause License\n\nCopyright (c) 2014-2017, Roman Sirokov\nAll rights reserved.\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n\n* Redistributions of source code must retain the above copyright notice, this\n  list of conditions and the following disclaimer.\n\n* Redistributions in binary form must reproduce the above copyright notice,\n  this list of conditions and the following disclaimer in the documentation\n  and/or other materials provided with the distribution.\n\n* Neither the name of the copyright holder nor the names of its\n  contributors may be used to endorse or promote products derived from\n  this software without specific prior written permission.\n\nTHIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\nAND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\nIMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\nDISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\nFOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\nDAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\nSERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\nCAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\nOR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\nOF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n",
+      "files": [
+        "python-packages/pywebview-6.2.1/pywebview-6.2.1.dist-info/licenses/LICENSE"
+      ]
+    },
+    {
+      "name": "pywin32-ctypes",
+      "version": "0.2.3",
+      "declared_license": "BSD-3-Clause",
+      "files": [
+        "python-packages/pywin32-ctypes-0.2.3/pywin32_ctypes-0.2.3.dist-info/LICENSE.txt"
+      ]
+    },
+    {
+      "name": "setuptools",
+      "version": "84.2.1",
+      "declared_license": "MIT",
+      "files": [
+        "python-packages/setuptools-84.2.1/setuptools-84.2.1.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/autocommand-2.2.2.dist-info/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/backports.tarfile-1.2.0.dist-info/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/importlib_metadata-8.7.1.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/jaraco.text-4.0.0.dist-info/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/jaraco_context-6.1.0.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/jaraco_functools-4.4.0.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/more_itertools-10.8.0.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/packaging-26.3.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/packaging-26.3.dist-info/licenses/LICENSE.APACHE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/packaging-26.3.dist-info/licenses/LICENSE.BSD",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/platformdirs-4.4.0.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/tomli-2.4.0.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/wheel-0.46.3.dist-info/licenses/LICENSE.txt",
+        "python-packages/setuptools-84.2.1/setuptools/_vendor/zipp-3.23.0.dist-info/licenses/LICENSE",
+        "python-packages/setuptools-84.2.1/setuptools/config/NOTICE",
+        "python-packages/setuptools-84.2.1/setuptools/config/_validate_pyproject/NOTICE"
+      ]
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "declared_license": "PSF-2.0",
+      "files": [
+        "python-packages/typing_extensions-4.16.0/typing_extensions-4.16.0.dist-info/licenses/LICENSE"
+      ]
+    }
+  ],
+  "python_license_sha256": "62bec384df47b0328307db41455ff6ea2559e5546b394ac69148561b21703120"
+}

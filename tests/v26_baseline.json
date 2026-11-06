@@ -1,0 +1,11 @@
+{
+  "basis": "Original supplied PrismLayerStudio-Interactive-v2.6, before desktop packaging",
+  "sha256": {
+    "app/index.html": "e6bd94113ec3c8cc573f077fbaefe42e13adb8124fd8047fb97426bd0d67acda",
+    "app/style.css": "91cb964a9bd591b95d83bc9da4de72c529902766ce037981cf18cc9781df4c72",
+    "app/hero.css": "fd6d540e408566e3c2db4749be08697bebc14df7b990ab06edf59e26a08be468",
+    "app/core.js": "d94c78b99fd442f517d0d86094f9a77312e67a581c63bf25afe3c7833d140c94",
+    "app/app.js": "2d1e6a7a9dd88c242bebc7c7c7e5e3c8a0aaf5989199022be93b42a749c6e969",
+    "app/hero.js": "52e840a6d1f726e0723052261b0fd862b9fa1d06a9880329895170065ebce853"
+  }
+}

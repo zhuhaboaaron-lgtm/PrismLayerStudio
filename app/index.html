@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="CFD 棱柱层网格辅助计算器，支持 Star-CCM+，y+、正反设计、实测校准与翼型局部估算。">
+<title>Prism Layer Studio · STAR-CCM+ 棱柱层设计工具</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="hero.css"></head>
+<body>
+<header class="top">
+  <div class="top-glow" aria-hidden="true"></div>
+  <div class="wrap top-inner">
+    <div class="hero-copy">
+      <div class="brand-row"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><path d="M6 23.5 18 29l12-5.5M6 17.5 18 23l12-5.5M18 6 31 12l-13 6L5 12l13-6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div><div class="brand-name">PRISM / ENGINEERING WORKSPACE</div><div class="brand-separator"></div><span class="brand-product">CFD TOOLKIT</span></div>
+      <div class="eyebrow"><span class="eyebrow-line"></span> BOUNDARY LAYER · MESH GENERATION</div>
+      <h1>Prism Layer <span>Studio</span><span class="title-dot">.</span></h1>
+      <p class="hero-description">让近壁网格设计从经验试错，变成可计算、可校准的工程工作流。</p>
+      <div class="hero-tags"><span><i class="tag-dot"></i> STAR-CCM+ 参数辅助</span><span>正向 / 反向设计</span><span>翼型局部估算</span></div>
+      <button type="button" class="hero-explore" id="heroExplore">探索计算工作台 <span aria-hidden="true">↗</span></button>
+    </div>
+    <div class="hero-visual hero-interactive" id="heroInteractive" tabindex="0" role="group" aria-label="交互棱柱层模型：移动鼠标观察局部网格，点击选中网格层，按左右方向键切换选中的层">
+      <div class="visual-top"><span class="visual-eyebrow"><span class="hero-signal"></span> INTERACTIVE MESH FIELD</span><div class="hero-tool"><span class="visual-live"><i></i> LIVE MODEL</span><button type="button" class="hero-motion-toggle" id="heroMotionToggle" aria-pressed="false">暂停动效</button></div></div>
+      <div class="hero-scene" id="heroScene">
+        <div class="scene-aurora"></div>
+        <div class="scene-tilt" id="sceneTilt">
+          <svg id="heroMesh" class="hero-mesh" viewBox="0 0 620 400" role="img" aria-label="随计算结果变化的可交互棱柱层曲面网格">
+            <defs>
+              <pattern id="heroGrid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M 24 0 L 0 0 0 24" fill="none" stroke="#527b94" stroke-opacity=".18" stroke-width=".75"/></pattern>
+              <linearGradient id="heroBand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#52eccd" stop-opacity=".85"/><stop offset=".54" stop-color="#59b5ff" stop-opacity=".8"/><stop offset="1" stop-color="#6d79f1" stop-opacity=".6"/></linearGradient>
+              <radialGradient id="heroRevealGradient" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="white" stop-opacity="1"/><stop offset=".60" stop-color="white" stop-opacity=".85"/><stop offset="1" stop-color="black" stop-opacity="0"/></radialGradient>
+              <mask id="heroRevealMask" maskUnits="userSpaceOnUse"><rect width="620" height="400" fill="black"/><circle id="heroReveal" cx="310" cy="205" r="155" fill="url(#heroRevealGradient)"/></mask>
+              <filter id="heroSoftGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+            </defs>
+            <rect width="620" height="400" fill="url(#heroGrid)"/>
+            <g id="heroOrbits" fill="none" stroke="#467e9f" stroke-opacity=".26"><ellipse cx="315" cy="205" rx="258" ry="133" stroke-dasharray="4 12"/><ellipse cx="315" cy="205" rx="212" ry="103" stroke-dasharray="3 17"/></g>
+            <g id="heroMeshBase"></g><g id="heroMeshReveal" mask="url(#heroRevealMask)"></g><g id="heroProbe"></g>
+          </svg>
+        </div>
+        <div class="scene-ripples" id="sceneRipples" aria-hidden="true"></div>
+        <div class="scene-crosshint" aria-hidden="true">MOVE TO REVEAL <span>✳</span> CLICK TO PROBE</div>
+        <div class="scene-coordinates" id="sceneCoordinates" aria-hidden="true">X 0.500 &nbsp; / &nbsp; Y 0.500</div>
+      </div>
+      <div class="scene-inspector" aria-live="polite"><span class="inspector-mark" aria-hidden="true">⌖</span><div class="inspector-copy"><span class="inspector-label" id="heroInspectionLabel">INTERACTIVE SURFACE PROBE</span><b id="heroInspectionValue">将鼠标移入模型，点击任意一层</b></div><span class="inspector-index" id="heroInspectionIndex">— / —</span></div>
+      <div class="visual-bottom"><span><b>01</b> MOVE / REVEAL / SELECT</span><span class="visual-formula" id="heroFormula">y⁺ → w → T</span></div>
+    </div>
+  </div>
+  <div class="wrap status-strip"><div class="status-left"><span class="status-dot"></span> <b>本地计算</b><span class="status-sep"></span>无外部依赖 <span class="status-sep"></span>离线可用</div><div class="status-right">PRISM LAYER STUDIO <b>v2.6</b></div></div>
+</header>
+<main class="wrap">
+<div class="notice"><span class="notice-icon" aria-hidden="true">i</span><div><strong>工程模型说明</strong><p>结果基于经验公式，用于 STAR-CCM+ 网格初始设计。<b>预测 y⁺ 不等于求解器实际 Wall Y⁺</b>，请在 CFD 求解后检查局部分布并迭代校准。</p></div><span class="notice-label">MODEL ASSUMPTION</span></div>
+<div class="layout">
+<section class="panel inputs" id="inputsSection">
+<h2><span class="num">01</span> <span>物性与几何工况</span><small>INPUT PARAMETERS</small></h2>
+<div class="field fluid-preset-field">
+  <label for="preset" id="presetLabel">物性预设</label>
+  <div class="fluid-select" id="fluidSelect">
+    <select id="preset" aria-label="流体物性预设"><option value="custom">自定义</option><option value="air25" selected>空气 25°C</option><option value="air15">空气 15°C</option><option value="water20">水 20°C</option><option value="nitrogen25">氮气 25°C</option><option value="co225">CO₂ 25°C</option></select>
+    <div class="fluid-picker" id="fluidPicker" hidden>
+      <button type="button" class="fluid-trigger" id="fluidTrigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="fluidMenu" aria-labelledby="presetLabel fluidCurrentName" aria-describedby="fluidCurrentMeta">
+        <span class="fluid-current-icon" id="fluidCurrentIcon" aria-hidden="true">气</span>
+        <span class="fluid-current-copy"><strong id="fluidCurrentName">空气 25°C</strong><small id="fluidCurrentMeta">ρ 1.184 kg/m³</small></span>
+        <svg class="fluid-chevron" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="fluid-menu" id="fluidMenu" role="listbox" aria-label="流体物性预设" hidden></div>
+    </div>
+  </div>
+</div>
+<div class="field"><label for="rho">密度 ρ <small>kg/m³</small></label><input id="rho" type="number" step="any" value="1.184"></div>
+<div class="field"><label for="viscosityMode">粘度类型</label><select id="viscosityMode"><option value="dynamic">动力粘度 μ（Pa·s）</option><option value="kinematic">运动粘度 ν（m²/s）</option></select></div>
+<div class="field"><label for="viscosity" id="viscosityLabel">动力粘度 μ <small>Pa·s</small></label><input id="viscosity" type="number" step="any" value="1.855e-5"></div>
+<div class="sep"></div>
+<div class="field"><label for="geometry">几何模型</label><select id="geometry"><option value="plate">平板外流</option><option value="wing">翼型 / 机翼局部近似</option><option value="pipe">光滑圆管内流</option></select></div>
+<div class="field"><label id="lengthLabel" for="length">参考长度 L <small>m</small></label><input id="length" type="number" min="0" step="any" value="1"></div>
+<div class="field"><label for="U">来流 / 管内平均速度 U <small>m/s</small></label><input id="U" type="number" min="0" step="any" value="10"></div>
+<div id="outerFields"><div class="field"><label for="xFraction">局部计算位置 x/L <small>0–1</small></label><input id="xFraction" type="number" min="0.000001" max="1" step="any" value="1"></div><div class="field" id="sideRow" hidden><label for="surface">翼型表面（仅标记）</label><select id="surface"><option value="suction">吸力面</option><option value="pressure">压力面</option></select></div><div class="field"><label for="flow">局部流动假设</label><select id="flow"><option value="turbulent">全湍流平板近似</option><option value="laminar">层流平板近似</option><option value="transition">转捩参考（层流 / 湍流范围）</option></select></div></div>
+<div class="field"><label for="manualCf">手动 Cf <small>0=自动</small></label><input id="manualCf" type="number" min="0" step="any" value="0"></div>
+<p class="helper">外流采用<strong>局部</strong>摩擦系数；圆管采用 Fanning 摩擦因子（非 Darcy）。手动 Cf 可取自可靠实验或 CFD 结果。</p>
+<div class="sep"></div>
+<h2><span class="num">02</span> <span>棱柱层设计</span><small>DESIGN MODE</small></h2>
+<div class="mode-tabs" id="modeTabs"><button type="button" class="active" data-mode="forward">正向计算</button><button type="button" data-mode="inverseN">反求层数</button><button type="button" data-mode="inverseR">反求拉伸</button><button type="button" data-mode="calibrate">实测校准</button></div>
+<p class="mode-intro" id="modeDescription">目标 y+、层数 N、增长率 r → 预测首层厚度和总厚度。</p>
+<div class="field"><label for="targetYplus">目标 y⁺</label><input id="targetYplus" type="number" step="any" value="1"></div>
+<div class="field" id="nRow"><label for="N">层数 N</label><input id="N" type="number" min="1" max="500" step="1" value="10"></div>
+<div class="field" id="rRow"><label for="r">增长率 r</label><input id="r" type="number" min="1" max="5" step="any" value="1.2"></div>
+<div class="field" id="targetTRow" hidden><label for="targetTmm">目标棱柱层总厚度 <small>mm</small></label><input id="targetTmm" type="number" min="0" step="any" value="10"></div>
+<div id="calibrationFields" hidden><div class="field"><label for="previousWum">旧首层厚度 <small>μm</small></label><input id="previousWum" type="number" min="0" step="any" value="70"></div><div class="field"><label for="measuredYplus">实测局部 Wall Y⁺</label><input id="measuredYplus" type="number" min="0" step="any" value="2"></div><p class="helper">请使用和该厚度对应的实际 Wall Y+（同一表面位置或相应统计口径），不可用本工具的预测值冒充实测。</p></div>
+<div class="field"><label for="coreCellMm">核心网格参考尺寸 <small>mm，可填 0</small></label><input id="coreCellMm" type="number" min="0" step="any" value="0"></div>
+<button id="calcButton" class="primary">重新计算</button><button id="resetButton" class="secondary">恢复默认示例</button>
+<div id="error" class="error" role="alert" hidden></div>
+</section>
+<section class="content">
+<div class="panel"><h2><span class="num">03</span> <span>设计结果</span><small>MODEL OUTPUT</small></h2>
+<div class="metrics"><div class="metric spotlight"><label>首层完整厚度 w</label><strong id="outW">—</strong><small id="outWm">—</small></div><div class="metric spotlight"><label>棱柱层总厚度 T</label><strong id="outT">—</strong><small id="outTm">—</small></div><div class="metric"><label>层数 N</label><strong id="outN">—</strong></div><div class="metric"><label>层间增长率 r</label><strong id="outR">—</strong></div></div>
+<div class="statline"><div>局部 Re<em id="outRe">—</em></div><div>Fanning / 局部 Cf<em id="outCf">—</em></div><div>摩擦速度 uτ<em id="outUtau">—</em></div><div>预测首层质心 y⁺<em id="outYp">—</em></div><div>估算 δ99<em id="outDelta">—</em></div><div>末层厚度 hN<em id="outLast">—</em></div><div>T / δ99<em id="outRatio">—</em></div><div>末层 / 核心单元<em id="outCoreRatio">—</em></div></div>
+<p id="correlation" class="helper"></p><div id="extraInfo" class="small-note"></div><div id="warnings" class="warnings"></div>
+<div class="actions"><button id="copyButton">复制 STAR-CCM+ 设置</button><button id="csvButton">导出 CSV</button><button id="jsonButton">导出 JSON</button></div></div>
+<div class="panel chart-panel"><h2><span class="num">04</span> <span>层厚分布</span><small>LOG SCALE</small></h2><div class="chart-legend"><span><i class="legend-block"></i> 单层厚度</span><span><i class="legend-line"></i> 累计厚度</span><em>对数坐标 · 单位 mm</em></div><svg id="chart" role="img" aria-label="棱柱层厚度分布与累计厚度曲线" viewBox="0 0 760 240"></svg><p class="helper">蓝色柱为单层厚度，黄色线为累计厚度；纵轴对数尺度，线和柱使用相同的长度单位。</p><details><summary>展开各层数据（前 100 层，完整数据可导出 CSV）</summary><div class="tableScroller"><table><thead><tr><th>层号</th><th>单层厚度 mm</th><th>累计 mm</th><th>预测质心 y⁺</th></tr></thead><tbody id="layerTable"></tbody></table></div></details></div>
+<div class="panel"><h2><span class="num">05</span> <span>STAR-CCM+ 参数映射</span><small>MESH CONTROL</small></h2><div class="method-grid"><div class="method"><h3>标准 Prism Layer Mesher</h3><p>采用 <strong>Geometric Progression / Stretch Factor</strong> 时，主要设置层数、增长率、总厚度；首层厚度为计算结果，不要误当独立自由度。</p><pre id="standardSummary"></pre></div><div class="method"><h3>Advancing Layer Mesher</h3><p>选择 <strong>Geometric Progression / Wall Thickness</strong> 分布模式时，以近壁厚度为控制目标；其他可配置项取决于版本和当前模式。</p><pre id="advancedSummary"></pre></div></div><p class="helper">两种 mesher 不要求同时开启。菜单名称、可编辑字段和实际层厚受软件版本、局部覆盖设置、塌陷层和网格质量约束影响。</p></div>
+</section></div>
+<section class="panel reference reference-collapsed">
+<details class="math-section" id="mathSection">
+  <summary class="math-section-summary" aria-label="展开或收起数学模型与公式">
+    <span class="num">06</span>
+    <span class="math-section-title">数学模型与公式</span>
+    <span class="math-section-subtitle">GOVERNING EQUATIONS</span>
+    <span class="math-section-toggle"><span class="math-open-label">查看公式</span><span class="math-close-label">收起公式</span><svg class="math-section-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+  </summary>
+  <div class="math-section-body">
+<div class="reference-grid reference-formulas">
+<article class="formula-card"><header class="formula-head"><div class="formula-head-title"><span class="formula-index">01</span><h3>首层厚度</h3></div><span class="formula-topic">FIRST CELL</span></header><div class="equations"><div class="equation" aria-label="局部雷诺数"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mrow><mi>ρ</mi><mi>U</mi><mi>x</mi></mrow><mi>μ</mi></mfrac></mstyle></math></span></div>
+<div class="equation" aria-label="壁面剪应力"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>τ</mi><mi>w</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mi>C</mi><mi>f</mi></msub><mi>ρ</mi><msup><mi>U</mi><mn>2</mn></msup></mstyle></math></span></div>
+<div class="equation" aria-label="摩擦速度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>u</mi><mi>τ</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msqrt><mfrac><msub><mi>τ</mi><mi>w</mi></msub><mi>ρ</mi></mfrac></msqrt></mstyle></math></span></div>
+<div class="equation" aria-label="首层厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>w</mi></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mrow><mn>2</mn><msup><mi>y</mi><mo>+</mo></msup><mi>μ</mi></mrow><mrow><mi>ρ</mi><msub><mi>u</mi><mi>τ</mi></msub></mrow></mfrac></mstyle></math></span></div></div></article>
+<article class="formula-card"><header class="formula-head"><div class="formula-head-title"><span class="formula-index">02</span><h3>层厚分布</h3></div><span class="formula-topic">LAYER GROWTH</span></header><div class="equations"><div class="equation" aria-label="第 i 层厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>h</mi><mi>i</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>w</mi><msup><mi>r</mi><mrow><mi>i</mi><mo>−</mo><mn>1</mn></mrow></msup></mstyle></math></span></div>
+<div class="equation" aria-label="厚度之和"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>T</mi></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>h</mi><mi>i</mi></msub></mstyle></math></span></div>
+<div class="equation" aria-label="等厚情况"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>T</mi></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>N</mi><mi>w</mi></mstyle></math><span class="equation-range">r = 1</span></span></div>
+<div class="equation" aria-label="几何级数厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>T</mi></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mi>w</mi><mfrac><mrow><msup><mi>r</mi><mi>N</mi></msup><mo>−</mo><mn>1</mn></mrow><mrow><mi>r</mi><mo>−</mo><mn>1</mn></mrow></mfrac></mstyle></math><span class="equation-range">r ≠ 1</span></span></div></div></article>
+<article class="formula-card"><header class="formula-head"><div class="formula-head-title"><span class="formula-index">03</span><h3>平板外流</h3></div><span class="formula-topic">FLAT PLATE</span></header><div class="equations"><div class="equation" aria-label="局部层流摩擦系数"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msubsup><mi>C</mi><mrow><mi>f</mi><mo>,</mo><mi>x</mi></mrow><mtext>lam</mtext></msubsup></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mn>0.664</mn><msqrt><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub></msqrt></mfrac></mstyle></math></span></div>
+<div class="equation" aria-label="局部湍流摩擦系数"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msubsup><mi>C</mi><mrow><mi>f</mi><mo>,</mo><mi>x</mi></mrow><mtext>turb</mtext></msubsup></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mn>0.0592</mn><msup><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub><mfrac><mn>1</mn><mn>5</mn></mfrac></msup></mfrac></mstyle></math></span></div>
+<div class="equation" aria-label="层流边界层厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>δ</mi><mrow><mn>99</mn><mo>,</mo><mtext>lam</mtext></mrow></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">≈</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mrow><mn>5</mn><mi>x</mi></mrow><msqrt><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub></msqrt></mfrac></mstyle></math></span></div>
+<div class="equation" aria-label="湍流边界层厚度"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>δ</mi><mrow><mn>99</mn><mo>,</mo><mtext>turb</mtext></mrow></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">≈</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mrow><mn>0.37</mn><mi>x</mi></mrow><msup><msub><mi mathvariant="normal">Re</mi><mi>x</mi></msub><mfrac><mn>1</mn><mn>5</mn></mfrac></msup></mfrac></mstyle></math></span></div></div></article>
+<article class="formula-card"><header class="formula-head"><div class="formula-head-title"><span class="formula-index">04</span><h3>光滑圆管</h3></div><span class="formula-topic">SMOOTH PIPE</span></header><div class="equations"><div class="equation" aria-label="充分发展层流 Fanning 摩擦因子"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>C</mi><mi>f</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">=</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mfrac><mn>16</mn><mi mathvariant="normal">Re</mi></mfrac></mstyle></math><span class="equation-range">Re &lt; 2300</span></span></div>
+<div class="equation" aria-label="Blasius 近似"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>C</mi><mi>f</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">≈</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><mn>0.0791</mn><msup><mi mathvariant="normal">Re</mi><mrow><mo>−</mo><mn>0.25</mn></mrow></msup></mstyle></math><span class="equation-range">4×10³ ≤ Re ≤ 10⁵</span></span></div>
+<div class="equation" aria-label="Petukhov 光滑圆管近似 Fanning 摩擦因子"><span class="eq-lhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msub><mi>C</mi><mi>f</mi></msub></mstyle></math></span><span class="eq-rel" aria-hidden="true">≈</span><span class="eq-rhs"><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle displaystyle="true"><msup><mrow><mo>[</mo><mn>4</mn><msup><mrow><mo>(</mo><mn>0.79</mn><mi mathvariant="normal">ln</mi><mo>(</mo><mi mathvariant="normal">Re</mi><mo>)</mo><mo>−</mo><mn>1.64</mn><mo>)</mo></mrow><mn>2</mn></msup><mo>]</mo></mrow><mn>−1</mn></msup></mstyle></math><span class="equation-range">Re &gt; 10⁵</span></span></div></div></article>
+</div>
+<details class="math-assumptions"><summary>公式假设与适用范围 <span>MODEL NOTES</span></summary>
+<div class="math-notes-grid">
+<p><strong>首层厚度：</strong>首层质心近似在 w/2；非正交网格、复杂曲率及局部摩擦系数变化可能导致偏差。预测值不等于求解器的实测 Wall Y⁺。</p>
+<p><strong>层厚分布：</strong>反求层数时向上取整；反求增长率时采用二分求解，不允许 r&lt;1。</p>
+<p><strong>平板外流：</strong>这里使用局部经验关系，不以固定雷诺数阈值代替转捩预测。</p>
+<p><strong>光滑圆管：</strong>假设充分发展流动。2300–4000 为过渡区，需要手动提供 Fanning C<sub>f</sub> 才能计算。</p>
+</div></details>
+  </div>
+</details>
+</section>
+<footer>Prism Layer Studio v2.5 · 离线运行 · 供工程估算，非求解器验证 · 保留原始版本于 legacy/</footer>
+</main>
+<div class="toast" id="toast" aria-live="polite"></div>
+<script src="core.js"></script><script src="app.js"></script><script src="hero.js"></script>
+</body></html>

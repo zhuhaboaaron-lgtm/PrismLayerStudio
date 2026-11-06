@@ -1,0 +1,33 @@
+[
+  {
+    "file": "proxy_tools-0.1.0-LICENSE.txt",
+    "source_url": "https://raw.githubusercontent.com/jtushman/proxy_tools/master/LICENSE.txt",
+    "sha256": "a428fb8a2e762af3eb0a6edbbb88e9b42ccfee80fd9b423958bcacf9b9abbfe4"
+  },
+  {
+    "file": "Microsoft.Web.WebView2-1.0.3856.49/LICENSE.txt",
+    "source_url": "https://api.nuget.org/v3-flatcontainer/microsoft.web.webview2/1.0.3856.49/microsoft.web.webview2.1.0.3856.49.nupkg",
+    "sha256": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55"
+  },
+  {
+    "file": "Microsoft.Web.WebView2-1.0.3856.49/NOTICE.txt",
+    "source_url": "https://api.nuget.org/v3-flatcontainer/microsoft.web.webview2/1.0.3856.49/microsoft.web.webview2.1.0.3856.49.nupkg",
+    "sha256": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+  },
+  {
+    "file": "Inno-Setup-LICENSE.txt",
+    "source_url": "https://raw.githubusercontent.com/jrsoftware/issrc/is-6_6_1/license.txt",
+    "sha256": "92f662bffd07b3d432e1399412877da2419e4962128a0a8f4db7a0522a6c9f62"
+  },
+  {
+    "file": "cffi-2.1.1-source/LICENSE",
+    "source_url": "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz",
+    "sha256": "5ba24ddc57067f9249add644c3afc41a5d6dc37e23433ef759d95df370b0af63"
+  },
+  {
+    "file": "cffi-2.1.1-source/libffi-x86-x64-NOTICES.txt",
+    "source_url": "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz",
+    "sha256": "b2c93464b18c731f54eadf2ea3078885cdee46ad9928511ed343207830b51ff1",
+    "note": "Original initial copyright/license comments extracted from bundled Windows libffi source files."
+  }
+]

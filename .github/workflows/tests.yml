@@ -1,0 +1,59 @@
+name: Numerical and Windows source tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Node 24 / Python 3.13 / Windows
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: utf-8
+      # Hosted CI does not guarantee an interactive Windows clipboard.
+      # This test remains enabled during local developer test.bat runs.
+      PRISM_STUDIO_CI: "1"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+          architecture: x64
+          cache: pip
+          cache-dependency-path: requirements-build.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+
+      - name: Install pinned Python dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check -r requirements-build.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m pip check
+          exit $LASTEXITCODE
+
+      - name: Run numerical, resource, hosting and native I/O contracts
+        shell: cmd
+        run: test.bat
+
+      - name: Check public-source hygiene and original v2.6 Git bytes
+        shell: cmd
+        run: python scripts/audit-github-source.py

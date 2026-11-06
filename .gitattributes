@@ -1,0 +1,17 @@
+* text=auto eol=lf
+
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+LICENSE text eol=lf
+
+# Preserve original v2.6 and third-party bytes, overriding type patterns above.
+app/** -text
+publish/** -text
+assets/** -text
+docs/images/** -text
+licenses/** -text
+installer/ChineseSimplified.isl -text

@@ -1,0 +1,45 @@
+# Local environments, build tools and generated releases
+.venv*/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.tools/
+build/
+dist/
+release/
+test-results/
+node_modules/
+
+# Downloaded binary dependencies; keep the version/hash lock
+vendor/*
+!vendor/webview2-runtime.lock.json
+*.exe
+*.msi
+*.msix
+*.zip
+*.7z
+*.log
+
+# Local credentials and signing material
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.pem
+*.key
+
+# User exports and machine metadata
+prism-layer-studio-layers.csv
+prism-layer-studio-result.json
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# Historic private publishing/development helpers
+legacy/
+CODEX_*.md
